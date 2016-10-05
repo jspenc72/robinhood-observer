@@ -77,13 +77,13 @@ var Robinhood = require('robinhood')(credentials, function(){
     setTimeout(function(){
       //Unsubscribe to updates for the data after 6 seconds.
       subscription.dispose();
-
+    }, 60000);
 });
 ```
 
 ## Useful Observables
 
-[See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information. 
+[See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 
 ### `observeQuote(symbol, request_frequency?)`
