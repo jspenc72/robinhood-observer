@@ -56,7 +56,7 @@ var credentials = {
     password: ''
 };
 
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
 
     //Robinhood is connected and you may begin sending commands to the api.
 
@@ -153,7 +153,7 @@ Get the current user's investment profile.
 
 ```js
 var credentials = require("../credentials.js")();
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.investment_profile(function(err, response, body){
         if(err){
             console.error(err);
@@ -184,7 +184,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 ```js
 var credentials = require("../credentials.js")();
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.instruments('AAPL',function(err, response, body){
         if(err){
             console.error(err);
@@ -223,7 +223,7 @@ Get the user's instruments for a specified stock.
 Get the user's quote data for a specified stock.
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.quote_data('AAPL', function(err, response, body){
         if(err){
             console.error(err);
@@ -256,7 +256,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 ### `accounts(callback)`
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.accounts(function(err, response, body){
         if(err){
             console.error(err);
@@ -302,7 +302,7 @@ Get the user's accounts.
 Get the user information.
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.user(function(err, response, body){
         if(err){
             console.error(err);
@@ -318,7 +318,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 Get the user's dividends information.
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.dividends(function(err, response, body){
         if(err){
             console.error(err);
@@ -335,7 +335,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 Get the user's orders information.
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.orders(function(err, response, body){
         if(err){
             console.error(err);
@@ -351,7 +351,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 Place a buy order on a specified stock.
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     var options = {
         type: 'limit',
         quantity: 1,
@@ -404,7 +404,7 @@ Place a sell order on a specified stock.
 
 ```js
 
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     var options = {
         type: 'limit',
         quantity: 1,
@@ -461,7 +461,7 @@ Get fundamental data about a symbol.
 An object containing information about the symbol:
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.fundamentals("SBPH", function(error, response, body){
         if(error){
             console.error(error);
@@ -492,7 +492,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 Cancel an order
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     //Get list of orders
     Robinhood.orders(function(error, response, body){
         if(error){
@@ -519,7 +519,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 ### `watchlists(name, callback)`
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.watchlists(function(err, response, body){
         if(err){
             console.error(err);
@@ -559,7 +559,7 @@ Robinhood.create_watch_list('Technology', function(err, response, body){
 
 ### `sp500_up(callback)`
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.sp500_up(function(err, response, body){
         if(err){
             console.error(err);
@@ -589,7 +589,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 
 ### `sp500_down(callback)`
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     Robinhood.sp500_down(function(err, response, body){
         if(err){
             console.error(err);
@@ -620,7 +620,7 @@ var Robinhood = require('robinhood')(credentials, function(){
 ### `splits(instrument, callback)`
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
 
     Robinhood.splits("7a3a677d-1664-44a0-a94b-3bb3d64f9e20", function(err, response, body){
         if(err){
@@ -646,9 +646,7 @@ Timespan Values can be:
 * `week`: 7 Day timespan historical data.
 
 ```js
-var Robinhood = require('robinhood')(credentials, function(){
-
-    //{interval=5minute|10minute (required) span=week|day| }
+var Robinhood = require('robinhood-observer')(credentials, function(){
 
     Robinhood.historicals("AAPL", '5minute', 'week', function(err, response, body){
         if(err){
