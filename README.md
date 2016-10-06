@@ -132,17 +132,20 @@ var Robinhood = require('../src')(credentials, function(){
   * [Installation](#installation)
   * [Usage](#usage)
   * [API](#api)
-    * [`observeQuote() // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`quote_data(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
-      * [`trigger`](#trigger)
-      * [`time`](#time)
-    * [`place_sell_order(options, callback)`](#place-sell-orderoptions-callback)
-      * [`trigger`](#trigger)
-      * [`time`](#time)
-    * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
-    * [`url(url, callback)`](#urlurl-callback)
+    * [Observables](#observables)
+        * [`observeQuote() // Not authenticated`](#quote-datastock-callback-not-authenticated)
+        * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)    
+
+    * [Methods](#methods)
+      * [`quote_data(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
+      * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
+        * [`trigger`](#trigger)
+        * [`time`](#time)
+      * [`place_sell_order(options, callback)`](#place-sell-orderoptions-callback)
+        * [`trigger`](#trigger)
+        * [`time`](#time)
+      * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
+      * [`url(url, callback)`](#urlurl-callback)
 
 * [Contributors](#contributors)
 * [TLDR](#api)
@@ -165,6 +168,8 @@ var Robinhood = require('../src')(credentials, function(){
 
 
 # REST API Methods Unauthenticated
+
+All non methods
 
 ### `quote_data(stock, callback)`
 
