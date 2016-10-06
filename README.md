@@ -216,7 +216,11 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 //}
 ```
 
-### `function historicals(symbol: string, interval: string, timespan: string, callback:()) or function historicals(symbol: string, interval: string, timespan: string): Promise{} `    
+#### Historicals
+
+- ``function historicals(symbol: string, interval: string, timespan: string, callback:())``
+
+- `function historicals(symbol: string, interval: string, timespan: string): Promise{} `    
 
 Interval Values can be:
 
