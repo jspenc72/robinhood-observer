@@ -74,6 +74,15 @@ setTimeout(function(){
 - symbol (Required)
 - request_frequency (Optional) Defaults to 800 milliseconds
 
+```typescript
+/**
+ * [observeQuote description]
+ * @param  {[string, Array]} symbol     [The Symbol for ]
+ * @param  {[number]} frequency         [Frequency with which to poll the Robinhood API in Milliseconds]
+ * @return {[Observable]}               [An observable which updates on the frequency provided.]
+ */
+```
+
 ```js
 var credentials = {
     username: '',
