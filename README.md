@@ -127,7 +127,7 @@ var credentials = {
     password: ''
 };
 
-var subscription = Robinhood(null).observeOrders(['AAPL'])
+var subscription = Robinhood(null).observeOrders()
                     .map(orders => orders.results)                               
                     .distinct()                                             //Only use distict results...
                     .subscribe(x => {
