@@ -1,15 +1,16 @@
 <h1><img src="https://raw.githubusercontent.com/jspenc72/robinhood-node/master/.github/robinhood-node.png"/></h1>
 
+
+[![NodeJS](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://nodejs.org/en/)
+[![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
+[![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
+
+
+
 [![RxJS](http://reactivex.io/assets/Rx_Logo_S.png)](http://reactivex.io)
 [![Bluebird](http://bluebirdjs.com/img/logo.png)](http://bluebirdjs.com/)
 
 
-
-[![Travis](https://img.shields.io/travis/aurbano/robinhood-node.svg?style=flat-square)](https://travis-ci.org/aurbano/robinhood-node)
-
-[![David](https://img.shields.io/david/aurbano/Robinhood-Node.svg?style=flat-square)](https://david-dm.org/aurbano/robinhood-node)
-
-[![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
 
 
 A Reactive NodeJS Framework to the [Robinhood](https://www.robinhood.com/) API.
