@@ -138,12 +138,15 @@ function Robinhood(opts, callback) {
    * |      API observables      | *
    * +--------------------------------+ */
 
-/**
- * [observeQuote description]
- * @param  {[string, Array]} symbol     [The Symbol for ]
- * @param  {[number]} frequency         [Frequency with which to poll the Robinhood API in Milliseconds]
- * @return {[Observable]}               [An observable which updates on the frequency provided.]
- */
+ /**
+  *
+  * [observeQuote description]
+  * @param  [string] symbol            The Symbol or Array of Symbols you want to observe.
+  * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+  *
+  * @return {[Observable]}             An observable which updates on the frequency provided.
+  *
+  */
   api.observeQuote = function(symbol, frequency){
    symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
    frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
@@ -165,7 +168,11 @@ function Robinhood(opts, callback) {
    })
    return source
   };
-
+/**
+ * [observeOrders description]
+ * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+ * @return {Observable}               An observable which updates on the frequency provided.
+ */
   api.observeOrders = function(frequency){
    frequency = frequency ? frequency : 800   //Set frequency of updates to 800 by default
    var source = Rx.Observable.create(function (observer) {

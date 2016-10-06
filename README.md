@@ -16,12 +16,12 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 ## Features
-* Reactive
-* Quote Data
-* Buy, Sell Orders
-* Daily Fundamentals
-* Daily, Weekly, Monthly Historicals
-* Callback and Promise Support (Bluebird)
+*   Reactive
+*   Quote Data
+*   Buy, Sell Orders
+*   Daily Fundamentals
+*   Daily, Weekly, Monthly Historicals
+*   Callback and Promise Support (Bluebird)
 
 ## Installation
 ```bash
@@ -76,15 +76,15 @@ setTimeout(function(){
 /**
  *
  * [observeQuote description]
- * @param  {[string, Array]} symbol     The Symbol or Array of Symbols you want to observe.
- * @param  {[number]} frequency         Frequency to poll the Robinhood API in Milliseconds
+ * @param  [string] symbol            The Symbol or Array of Symbols you want to observe.
+ * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
  *
- * @return {[Observable]}               An observable which updates on the frequency provided.
+ * @return {[Observable]}             An observable which updates on the frequency provided.
  *
  */
 ```
-- symbol (Required)
-- request_frequency (Optional) Defaults to 800 milliseconds
+-   symbol (Required)
+-   request_frequency (Optional) Defaults to 800 milliseconds
 
 ```js
 var credentials = {
@@ -111,7 +111,18 @@ var Robinhood = require('../src')(credentials, function(){
 ```
 
 ### `observeOrders(request_frequency?)`
-- request_frequency (Optional) Defaults to 800 milliseconds
+
+#### Parameters
+
+```typescript
+/**
+ * [observeOrders description]
+ * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+ * @return {Observable}               An observable which updates on the frequency provided.
+ */
+```
+
+-   request_frequency (Optional) Defaults to 800 milliseconds
 
 ```js
 var credentials = {
@@ -158,22 +169,23 @@ var Robinhood = require('../src')(credentials, function(){
       * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
       * [`url(url, callback)`](#urlurl-callback)
 
-* [Contributors](#contributors)
-* [TLDR](#api)
-  * [`watchlists(name, callback)`](#watchlistsname-callback)
-  * [`create_watch_list(name, callback)`](#create-watch-listname-callback)
-  * [`sp500_up(callback)`](#sp500-upcallback)
-  * [`sp500_down(callback)`](#sp500-downcallback)
-  * [`splits(instrument, callback)`](#splitsinstrument-callback)
-  * [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
-    * [Response](#response)
-  * [`accounts(callback)`](#accountscallback)
-  * [`user(callback)`](#usercallback)
-  * [`dividends(callback)`](#dividendscallback)
-  * [`orders(callback)`](#orderscallback)
-  * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
-  * [`investment_profile(callback)`](#investment-profilecallback)
-  * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
+  *   [Contributors](#contributors)
+
+  * [TLDR](#api)
+    * [`watchlists(name, callback)`](#watchlistsname-callback)
+    * [`create_watch_list(name, callback)`](#create-watch-listname-callback)
+    * [`sp500_up(callback)`](#sp500-upcallback)
+    * [`sp500_down(callback)`](#sp500-downcallback)
+    * [`splits(instrument, callback)`](#splitsinstrument-callback)
+    * [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
+      * [Response](#response)
+    * [`accounts(callback)`](#accountscallback)
+    * [`user(callback)`](#usercallback)
+    * [`dividends(callback)`](#dividendscallback)
+    * [`orders(callback)`](#orderscallback)
+    * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
+    * [`investment_profile(callback)`](#investment-profilecallback)
+    * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
 <!-- toc stop -->
 
 
@@ -234,19 +246,19 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 
 #### `historicals`
 
-- ``function historicals(symbol: string, interval: string, timespan: string, callback:())``
+-   ``function historicals(symbol: string, interval: string, timespan: string, callback:())``
 
-- `function historicals(symbol: string, interval: string, timespan: string): Promise{} `    
+-   `function historicals(symbol: string, interval: string, timespan: string): Promise{} `    
 
 Interval Values can be:
 
-* `5minute`: 5 Minute interval historical data.
-* `10minute`: 10 Minute interval historical data.
+*   `5minute`: 5 Minute interval historical data.
+*   `10minute`: 10 Minute interval historical data.
 
 Timespan Values can be:
 
-* `day`: 1 Day timespan historical data.
-* `week`: 7 Day timespan historical data.
+*   `day`: 1 Day timespan historical data.
+*   `week`: 7 Day timespan historical data.
 
 ```js
 var Robinhood = require('robinhood-observer')(credentials, function(){
@@ -495,9 +507,9 @@ A *[trade trigger](http://www.investopedia.com/terms/t/trade-trigger.asp)* is us
 
 Values can be:
 
-* `gfd`: Good For Day
-* `gtc`: Good Till Cancelled
-* `oco`: Order Cancels Other
+*   `gfd`: Good For Day
+*   `gtc`: Good Till Cancelled
+*   `oco`: Order Cancels Other
 
 #### `time`
 
@@ -505,8 +517,8 @@ The *[time in force](http://www.investopedia.com/terms/t/timeinforce.asp?layout=
 
 Values can be:
 
-* `immediate` : The order will be cancelled unless it is fulfilled immediately.
-* `day` : The order will be cancelled at the end of the trading day.
+*   `immediate` : The order will be cancelled unless it is fulfilled immediately.
+*   `day` : The order will be cancelled at the end of the trading day.
 
 ### `place_sell_order(options, callback)`
 
@@ -549,9 +561,9 @@ A *[trade trigger](http://www.investopedia.com/terms/t/trade-trigger.asp)* is us
 
 Values can be:
 
-* `gfd`: Good For Day
-* `gtc`: Good Till Cancelled
-* `oco`: Order Cancels Other
+*   `gfd`: Good For Day
+*   `gtc`: Good Till Cancelled
+*   `oco`: Order Cancels Other
 
 #### `time`
 
@@ -559,8 +571,8 @@ The *[time in force](http://www.investopedia.com/terms/t/timeinforce.asp?layout=
 
 Values can be:
 
-* `immediate` : The order will be cancelled unless it is fulfilled immediately.
-* `day` : The order will be cancelled at the end of the trading day.
+*   `immediate` : The order will be cancelled unless it is fulfilled immediately.
+*   `day` : The order will be cancelled at the end of the trading day.
 
 ### `fundamentals(symbol, callback)`
 
@@ -755,7 +767,7 @@ next: 'https://api.robinhood.com/orders/?cursor=cD0yMD82LTA0LTAzKzkwJVNCNTclM0Ex
 The url returned can be passed to the `url` method to continue getting the next set of results.
 
 ## Contributors
-* Jesse Spencer ([@Jspenc72](https://github.com/jspenc72))
+*   Jesse Spencer ([@Jspenc72](https://github.com/jspenc72))
 ------------------
 
 ### Credits and Inspiration
