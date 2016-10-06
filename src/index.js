@@ -5,8 +5,12 @@ var RxJS = require('rxjs'),
     rp = require('request-promise');
 
 'use strict';
-// Dependencies
 
+/**
+ * [Robinhood description]
+ * @param { username: string, password: string }   opts     [description]
+ * @param {Function} callback [description]
+ */
 function Robinhood(opts, callback) {
   /* +--------------------------------+ *
    * |      Internal variables        | *
@@ -134,47 +138,54 @@ function Robinhood(opts, callback) {
    * |      API observables      | *
    * +--------------------------------+ */
 
-     api.observeQuote = function(symbol, frequency){
-       symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
-       frequency = frequency ? frequency : 800         //Set frequency of updates to 800 by default
-       var count = 0;
-       var source = Rx.Observable.create(function (observer) {
-         var intrvl = setInterval(function(){
-           _rp.get({
-                 uri: _apiUrl + _endpoints.quotes,
-                 qs: { 'symbols': symbol.toUpperCase() }
-               })
-               .then(success => {
-                 observer.onNext(success);
-               })
-         }, frequency);
-         return () => {
-           clearInterval(intrvl);
-         }
-       })
-       return source
-     };
+/**
+ * [observeQuote description]
+ * @param  {[string, Array]} symbol     [The Symbol for ]
+ * @param  {[number]} frequency         [Frequency with which to poll the Robinhood API in Milliseconds]
+ * @return {[Observable]}               [An observable which updates on the frequency provided.]
+ */
+  api.observeQuote = function(symbol, frequency){
+   symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
+   frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
+   var count = 0;
+   var source = Rx.Observable.create(function (observer) {
+     var intrvl = setInterval(function(){
+       _rp.get({
+             uri: _apiUrl + _endpoints.quotes,
+             qs: { 'symbols': symbol.toUpperCase() }
+           })
+           .then(success => {
 
-     api.observeOrders = function(frequency){
-       frequency = frequency ? frequency : 800   //Set frequency of updates to 800 by default
-       var source = Rx.Observable.create(function (observer) {
-         var intrvl = setInterval(function(){
-           _rp.get({
-                 uri: _apiUrl + _endpoints.orders
-               })
-               .then(success => {
-                 observer.onNext(success);
-               })
-               .catch(err => {
-                 observer.onError(err);
-               })
-         }, frequency);
-         return () => {
-           clearInterval(intrvl);
-         }
-       })
-       return source
-     };
+             observer.onNext(success);
+           })
+     }, frequency);
+     return () => {
+       clearInterval(intrvl);
+     }
+   })
+   return source
+  };
+
+  api.observeOrders = function(frequency){
+   frequency = frequency ? frequency : 800   //Set frequency of updates to 800 by default
+   var source = Rx.Observable.create(function (observer) {
+     var intrvl = setInterval(function(){
+       _rp.get({
+             uri: _apiUrl + _endpoints.orders
+           })
+           .then(success => {
+             observer.onNext(success);
+           })
+           .catch(err => {
+             observer.onError(err);
+           })
+     }, frequency);
+     return () => {
+       clearInterval(intrvl);
+     }
+   })
+   return source
+  };
 
   /* +--------------------------------+ *
    * |      REST API methods        | *
