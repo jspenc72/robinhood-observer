@@ -55,6 +55,7 @@ $ npm install robinhood-observer --save
 ```
 ## [Example Project](https://github.com/jspenc72/robinhood-observer-starter/blob/master/index.js)
 
+The example project helps you get started right off the bat and demonstrates some of the cool things you can do with this library.
 
 
 ## Usage
