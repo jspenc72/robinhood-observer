@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Wrapper for Robinhood Free Stock Trading ",
   "main": "src/index.js",
   "scripts": {
