@@ -1,4 +1,5 @@
 <h1><img src="https://raw.githubusercontent.com/jspenc72/robinhood-node/master/.github/robinhood-node.png"/></h1>
+
 [![RxJS](http://reactivex.io/assets/Rx_Logo_S.png)](http://reactivex.io)
 [![Bluebird](http://bluebirdjs.com/img/logo.png)](http://bluebirdjs.com/)
 
@@ -11,7 +12,7 @@
 [![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
 
 
-A Reactive NodeJS Framework to interact with the private [Robinhood](https://www.robinhood.com/) API.
+A Reactive NodeJS Framework to the private [Robinhood](https://www.robinhood.com/) API.
 
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
@@ -21,7 +22,7 @@ A Reactive NodeJS Framework to interact with the private [Robinhood](https://www
 * Buy, Sell Orders
 * Daily Fundamentals
 * Daily, Weekly, Monthly Historicals
-* Callback Support, Promise Support
+* Callback and Promise Support (Bluebird)
 
 ## Installation
 ```bash
@@ -733,18 +734,18 @@ next: 'https://api.robinhood.com/orders/?cursor=cD0yMD82LTA0LTAzKzkwJVNCNTclM0Ex
 
 The url returned can be passed to the `url` method to continue getting the next set of results.
 
-# Contributors
+## Contributors
 * Jesse Spencer ([@Jspenc72](https://github.com/jspenc72))
 ------------------
 
-# Credits and Inspiration
+### Credits and Inspiration
 Alejandro U. Alvarez ([@aurbano](https://github.com/aurbano))
 Jamonek ([@Jamonek](https://github.com/Jamonek/Robinhood))
 Sanko ([@sanko](https://github.com/sanko/Robinhood))
 
 ------------------
 
-# Further Information
+### Further Information
 
 See @Sanko's [Unofficial Documentation](https://github.com/sanko/Robinhood) for more information.
 FYI [Robinhood's Terms and Conditions](https://brokerage-static.s3.amazonaws.com/assets/robinhood/legal/Robinhood%20Terms%20and%20Conditions.pdf)
