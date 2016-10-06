@@ -12,7 +12,7 @@
 [![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
 
 
-A Reactive NodeJS Framework to the private [Robinhood](https://www.robinhood.com/) API.
+A Reactive NodeJS Framework to the [Robinhood](https://www.robinhood.com/) API.
 
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
