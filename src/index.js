@@ -138,15 +138,15 @@ function Robinhood(opts, callback) {
    * |      API observables      | *
    * +--------------------------------+ */
 
- /**
-  *
-  * [observeQuote description]
-  * @param  [string] symbol            The Symbol or Array of Symbols you want to observe.
-  * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
-  *
-  * @return {[Observable]}             An observable which updates on the frequency provided.
-  *
-  */
+   /**
+    *
+    * [observeQuote description]
+    * @param  [string] symbol            The Symbol or Array of Symbols you want to observe.
+    * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+    *
+    * @return {[Observable]}             An observable which updates on the frequency provided.
+    *
+    */
   api.observeQuote = function(symbol, frequency){
    symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
    frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
@@ -168,13 +168,13 @@ function Robinhood(opts, callback) {
    })
    return source
   };
-/**
- * [observeOrders description]
- * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
- * @return {Observable}               An observable which updates on the frequency provided.
- */
+  /**
+   * [observeOrders description]
+   * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+   * @return {Observable}               An observable which updates on the frequency provided.
+   */
   api.observeOrders = function(frequency){
-   frequency = frequency ? frequency : 800   //Set frequency of updates to 800 by default
+   frequency = frequency ? frequency : 5000;   //Set frequency of updates to 5000 by default
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
        _rp.get({
@@ -189,14 +189,20 @@ function Robinhood(opts, callback) {
      }, frequency);
      return () => {
        clearInterval(intrvl);
-     }
-   })
+     };
+   });
    return source
   };
 
   /* +--------------------------------+ *
    * |      REST API methods        | *
    * +--------------------------------+ */
+
+  /**
+   * [investment_profile description]
+   * @param  {Function} callback [description]
+   * @return {Function or Promise}            [description]
+   */
   api.investment_profile = function(callback){
     var tUri = _apiUrl + _endpoints.investment_profile;
     var tOpts = {
@@ -209,6 +215,12 @@ function Robinhood(opts, callback) {
     }
   };
 
+  /**
+   * [fundamentals description]
+   * @param  [string]   symbol   [description]
+   * @param  {Function} callback [description]
+   * @return {Function or Promise}            [description]
+   */
   api.fundamentals = function(symbol, callback){
     symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
 
@@ -216,14 +228,19 @@ function Robinhood(opts, callback) {
     var tOpts = {
         uri: tUri,
         qs: { 'symbols': symbol }
-      }
+      };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
     }else{
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [instruments description]
+   * @param  [string]   symbol                  [description]
+   * @param  {Function} callback                [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.instruments = function(symbol, callback){
     symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
 
@@ -238,10 +255,15 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [quote description]
+   * @param  [String]   symbol   [description]
+   * @param  {Function} callback [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.quote = function(symbol, callback){
-    var tUri = _apiUrl
-    var tOpts = {
+    var tUri = _apiUrl,
+        tOpts = {
         uri: tUri
       };
     symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
@@ -255,13 +277,17 @@ function Robinhood(opts, callback) {
       return _rp.get({
           uri: _apiUrl + _endpoints.quotes,
           qs: { 'symbols': symbol.toUpperCase() }
-        })
+        });
     }
   };
-
+  /**
+   * [accounts description]
+   * @param  {Function} callback                [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.accounts= function(callback){
-    var tUri = _apiUrl
-    var tOpts = {
+    var tUri = _apiUrl,
+        tOpts = {
       uri: _apiUrl + _endpoints.accounts
     };
     if (callback && typeof callback == "function") {
@@ -270,10 +296,14 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [user description]
+   * @param  {Function} callback [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.user = function(callback){
-    var tUri = _apiUrl + _endpoints.user
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.user,
+        tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
@@ -285,9 +315,14 @@ function Robinhood(opts, callback) {
     }
   };
 
+  /**
+   * [dividends description]
+   * @param  {Function} callback [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.dividends = function(callback){
-    var tUri = _apiUrl + _endpoints.dividends
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.dividends,
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -296,10 +331,14 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [orders description]
+   * @param  {Function} callback [description]
+   * @return {[Function or Promise]}            [description]
+   */
   api.orders = function(callback){
-    var tUri = _apiUrl + _endpoints.orders
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.orders,
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -308,11 +347,16 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [cancel_order description]
+   * @param  {[type]}   order         [description]
+   * @param  {Function} callback      [description]
+   * @return {[Function or Promise]}  [description]
+   */
   api.cancel_order = function(order, callback){
     if(order && typeof order == "object" && order.cancel){
-      var tUri = _apiUrl + order.cancel;
-      var tOpts = {
+      var tUri = _apiUrl + order.cancel,
+          tOpts = {
           uri: tUri
         };
 
@@ -321,7 +365,7 @@ function Robinhood(opts, callback) {
               return _request.post(tOpts, callback);
             }else{
               callback({message: order.state=="cancelled" ? "Order already cancelled." : "Order cannot be cancelled.", order: order }, null, null);
-            };
+            }
       }else{
         return _rp.get(tOpts);
       }
@@ -339,8 +383,13 @@ function Robinhood(opts, callback) {
         });
       }
     }
-  }
-
+  };
+  /**
+   * [_place_order description]
+   * @param  {[type]}   options  [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   var _place_order = function(options, callback){
     var tUri = _apiUrl + _endpoints.orders;
     var tOpts = {
@@ -364,7 +413,12 @@ function Robinhood(opts, callback) {
       return _rp.post(tOpts);
     }
   };
-
+  /**
+   * [place_buy_order description]
+   * @param  {[type]}   options  [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.place_buy_order = function(options, callback){
     if (callback && typeof callback == "function") {
       options.transaction = 'buy';
@@ -373,7 +427,12 @@ function Robinhood(opts, callback) {
       return _place_order(options);
     }
   };
-
+  /**
+   * [place_sell_order description]
+   * @param  {[type]}   options  [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.place_sell_order = function(options, callback){
     options.transaction = 'sell';
     if (callback && typeof callback == "function") {
@@ -382,10 +441,14 @@ function Robinhood(opts, callback) {
       return _place_order(options);
     }
   };
-
+  /**
+   * [positions description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.positions = function(callback){
-    var tUri = _apiUrl + _endpoints.positions
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.positions,
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -394,10 +457,15 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [news description]
+   * @param  {[type]}   symbol   [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.news = function(symbol, callback){
-    var tUri = _apiUrl + [_endpoints.news,'/'].join(symbol)
-    var tOpts = {
+    var tUri = _apiUrl + [_endpoints.news,'/'].join(symbol),
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -406,10 +474,14 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [markets description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.markets = function(callback){
-    var tUri = _apiUrl + _endpoints.markets
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.markets,
+        tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
@@ -418,10 +490,14 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [sp500_up description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.sp500_up = function(callback){
-    var tUri = _apiUrl + _endpoints.sp500_up
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.sp500_up,
+        tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
@@ -430,10 +506,14 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [sp500_down description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.sp500_down = function(callback){
-    var tUri = _apiUrl + _endpoints.sp500_down
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.sp500_down,
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -442,7 +522,12 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [create_watch_list description]
+   * @param  {[type]}   name     [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.create_watch_list = function(name, callback){
     var tUri = _apiUrl + _endpoints.watchlists;
     var tOpts = {
@@ -457,10 +542,14 @@ function Robinhood(opts, callback) {
       return _rp.post(tOpts);
     }
   };
-
+  /**
+   * [watchlists description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.watchlists = function(callback){
-    var tUri = _apiUrl + _endpoints.watchlists
-    var tOpts = {
+    var tUri = _apiUrl + _endpoints.watchlists,
+        tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
@@ -469,10 +558,15 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [splits description]
+   * @param  {[type]}   instrument [description]
+   * @param  {Function} callback   [description]
+   * @return {[type]}              [description]
+   */
   api.splits = function(instrument, callback){
-    var tUri = _apiUrl + [_endpoints.instruments,'/splits/'].join(instrument)
-    var tOpts = {
+    var tUri = _apiUrl + [_endpoints.instruments,'/splits/'].join(instrument),
+        tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
@@ -481,15 +575,22 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [historicals description]
+   * @param  {[type]}   symbol   [description]
+   * @param  {[type]}   intv     [description]
+   * @param  {[type]}   span     [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.historicals = function(symbol, intv, span, callback){
 
     if(typeof intv == 'function'){
       // callback(new Error("You must provide a symbol, interval and timespan"));
-      return
+      return;
     }
-    var tUri = _apiUrl + [_endpoints.quotes + 'historicals/','/?interval='+intv+'&span='+span].join(symbol)
-    var tOpts = {
+    var tUri = _apiUrl + [_endpoints.quotes + 'historicals/','/?interval='+intv+'&span='+span].join(symbol),
+        tOpts = {
         uri: tUri
       };
     if (callback && typeof callback == "function") {
@@ -498,7 +599,12 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
-
+  /**
+   * [url description]
+   * @param  {string}   url      [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
   api.url = function (url, callback){
     var tOpts = {
         uri: url

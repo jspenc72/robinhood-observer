@@ -92,22 +92,19 @@ var credentials = {
     password: ''
 };
 
-var Robinhood = require('../src')(credentials, function(){
-    var subscription = Robinhood.observeQuote(['AAPL'])
-    .map(quote => quote.results)
-    .distinct()                         //Only use distict results...
-    .subscribe(x => {
-      //Do something each time the price changes
-      console.log(x);
-    }, e => {
-      console.log("error with result");
-      console.error(e)
-    }, () => console.log('onCompleted'));
-    setTimeout(function(){
-      //Unsubscribe to updates for the data after 6 seconds.
-      subscription.dispose();
-    }, 60000);
-});
+var subscription = Robinhood(null).observeQuote(['AAPL'])
+                    .map(quote => quote.results)
+                    .filter((results, idx, obs) => {
+                        return results[0].last_trade_price == 113.0500      //Only update
+                    })                                  
+                    .distinct()                                             //Only use distict results...
+                    .subscribe(x => {
+                        //Do something each time the price changes
+                        console.log(x);
+
+                    }, e => {
+                        console.error(e)
+                    }, () => console.log('disposed'));
 ```
 
 ### `observeOrders(request_frequency?)`
@@ -122,7 +119,7 @@ var Robinhood = require('../src')(credentials, function(){
  */
 ```
 
--   request_frequency (Optional) Defaults to 800 milliseconds
+-   request_frequency (Optional) Defaults to 5000 milliseconds
 
 ```js
 var credentials = {
@@ -130,22 +127,22 @@ var credentials = {
     password: ''
 };
 
-var Robinhood = require('../src')(credentials, function(){
-    var subscription = Robinhood.observeOrders()
-    .map(quote => quote.results)
-    .distinct()                         //Only use distict results...
-    .subscribe(x => {
-      //Do something each time the price changes
-      console.log(x);
-    }, e => {
-      console.log("error with result");
-      console.error(e)
-    }, () => console.log('onCompleted'));
-    setTimeout(function(){
-      //Unsubscribe to updates for the data after 6 seconds.
-      subscription.dispose();
-    }, 60000);
-});
+var subscription = Robinhood(null).observeOrders(['AAPL'])
+                    .map(orders => orders.results)                               
+                    .distinct()                                             //Only use distict results...
+                    .subscribe(x => {
+                        //Do something each time the price changes
+                        console.log(x);
+
+                    }, e => {
+                        console.error(e)
+                    }, () => console.log('disposed'));
+
+//Unsubscribe to updates after 6 seconds.
+
+setTimeout(function(){
+ subscription.dispose();  
+}, 60000);                    
 ```
 
 
