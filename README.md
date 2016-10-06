@@ -216,7 +216,7 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 //}
 ```
 
-#### Historicals
+#### `historicals`
 
 - ``function historicals(symbol: string, interval: string, timespan: string, callback:())``
 
