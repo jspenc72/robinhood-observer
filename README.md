@@ -183,6 +183,7 @@ setTimeout(function(){
     * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
     * [`investment_profile(callback)`](#investment-profilecallback)
     * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
+    
 <!-- toc stop -->
 
 
