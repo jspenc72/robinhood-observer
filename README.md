@@ -152,8 +152,113 @@ var Robinhood = require('../src')(credentials, function(){
 ```
 
 
-## REST API Methods
+# REST API Methods Unauthenticated
 
+### `quote_data(stock, callback)`
+
+Get the user's quote data for a specified stock.
+
+```js
+//Promise Style
+var Robinhood = require('robinhood-observer')
+
+Robinhood(null).quote_data('AAPL')
+.then(success => {
+  console.log(success);
+})
+.catch(err => {
+  console.error(err);
+})
+
+//Callback Style
+var Robinhood = require('robinhood-observer')(credentials, function(){
+    Robinhood.quote_data('AAPL', function(err, response, body){
+        if(err){
+            console.error(err);
+        }else{
+            console.log("quote_data");
+            console.log(body);
+
+        }
+    })
+});
+
+//response
+//{
+//    results: [
+//        {
+//            ask_price: String, // Float number in a String, e.g. '735.7800'
+//            ask_size: Number, // Integer
+//            bid_price: String, // Float number in a String, e.g. '731.5000'
+//            bid_size: Number, // Integer
+//            last_trade_price: String, // Float number in a String, e.g. '726.3900'
+//            last_extended_hours_trade_price: String, // Float number in a String, e.g. '735.7500'
+//            previous_close: String, // Float number in a String, e.g. '743.6200'
+//            adjusted_previous_close: String, // Float number in a String, e.g. '743.6200'
+//            previous_close_date: String, // YYYY-MM-DD e.g. '2016-01-06'
+//            symbol: String, // e.g. 'AAPL'
+//            trading_halted: Boolean,
+//            updated_at: String, // YYYY-MM-DDTHH:MM:SS e.g. '2016-01-07T21:00:00Z'
+//        }
+//    ]
+//}
+```
+
+### `function historicals(symbol: string, interval: string, timespan: string, callback:()) or function historicals(symbol: string, interval: string, timespan: string): Promise{} `    
+
+Interval Values can be:
+
+* `5minute`: 5 Minute interval historical data.
+* `10minute`: 10 Minute interval historical data.
+
+Timespan Values can be:
+
+* `day`: 1 Day timespan historical data.
+* `week`: 7 Day timespan historical data.
+
+```js
+var Robinhood = require('robinhood-observer')(credentials, function(){
+
+    Robinhood.historicals("AAPL", '5minute', 'week', function(err, response, body){
+        if(err){
+            console.error(err);
+        }else{
+            console.log("got historicals");
+            console.log(body);
+            //             
+            //    { quote: 'https://api.robinhood.com/quotes/AAPL/',
+            //      symbol: 'AAPL',
+            //      interval: '5minute',
+            //      span: 'week',
+            //      bounds: 'regular',
+            //      previous_close: null,
+            //      historicals:
+            //       [ { begins_at: '2016-09-15T13:30:00Z',
+            //           open_price: '113.8300',
+            //           close_price: '114.1700',
+            //           high_price: '114.3500',
+            //           low_price: '113.5600',
+            //           volume: 3828122,
+            //           session: 'reg',
+            //           interpolated: false },
+            //         { begins_at: '2016-09-15T13:35:00Z',
+            //           open_price: '114.1600',
+            //           close_price: '114.3800',
+            //           high_price: '114.7300',
+            //           low_price: '114.1600',
+            //           volume: 2166098,
+            //           session: 'reg',
+            //           interpolated: false },
+            //         ... 290 more items
+            //      ]}
+            //
+        }
+    })
+})
+```
+
+
+## REST API Methods Authenticated
 Before using these methods, make sure you have initialized Robinhood using the snippet above.
 
 ### `investment_profile(callback)`
@@ -225,41 +330,6 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 
 
 Get the user's instruments for a specified stock.
-
-### `quote_data(stock, callback) // Not authenticated`
-
-Get the user's quote data for a specified stock.
-
-```js
-var Robinhood = require('robinhood-observer')(credentials, function(){
-    Robinhood.quote_data('AAPL', function(err, response, body){
-        if(err){
-            console.error(err);
-        }else{
-            console.log("quote_data");
-            console.log(body);
-            //{
-            //    results: [
-            //        {
-            //            ask_price: String, // Float number in a String, e.g. '735.7800'
-            //            ask_size: Number, // Integer
-            //            bid_price: String, // Float number in a String, e.g. '731.5000'
-            //            bid_size: Number, // Integer
-            //            last_trade_price: String, // Float number in a String, e.g. '726.3900'
-            //            last_extended_hours_trade_price: String, // Float number in a String, e.g. '735.7500'
-            //            previous_close: String, // Float number in a String, e.g. '743.6200'
-            //            adjusted_previous_close: String, // Float number in a String, e.g. '743.6200'
-            //            previous_close_date: String, // YYYY-MM-DD e.g. '2016-01-06'
-            //            symbol: String, // e.g. 'AAPL'
-            //            trading_halted: Boolean,
-            //            updated_at: String, // YYYY-MM-DDTHH:MM:SS e.g. '2016-01-07T21:00:00Z'
-            //        }
-            //    ]
-            //}
-        }
-    })
-});
-```
 
 ### `accounts(callback)`
 
@@ -641,58 +711,6 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 })
 ```
 
-### `historicals(symbol, interval, timespan, callback)`    
-
-Interval Values can be:
-
-* `5minute`: 5 Minute interval historical data.
-* `10minute`: 10 Minute interval historical data.
-
-Timespan Values can be:
-
-* `day`: 1 Day timespan historical data.
-* `week`: 7 Day timespan historical data.
-
-```js
-var Robinhood = require('robinhood-observer')(credentials, function(){
-
-    Robinhood.historicals("AAPL", '5minute', 'week', function(err, response, body){
-        if(err){
-            console.error(err);
-        }else{
-            console.log("got historicals");
-            console.log(body);
-            //             
-            //    { quote: 'https://api.robinhood.com/quotes/AAPL/',
-            //      symbol: 'AAPL',
-            //      interval: '5minute',
-            //      span: 'week',
-            //      bounds: 'regular',
-            //      previous_close: null,
-            //      historicals:
-            //       [ { begins_at: '2016-09-15T13:30:00Z',
-            //           open_price: '113.8300',
-            //           close_price: '114.1700',
-            //           high_price: '114.3500',
-            //           low_price: '113.5600',
-            //           volume: 3828122,
-            //           session: 'reg',
-            //           interpolated: false },
-            //         { begins_at: '2016-09-15T13:35:00Z',
-            //           open_price: '114.1600',
-            //           close_price: '114.3800',
-            //           high_price: '114.7300',
-            //           low_price: '114.1600',
-            //           volume: 2166098,
-            //           session: 'reg',
-            //           interpolated: false },
-            //         ... 290 more items
-            //      ]}
-            //
-        }
-    })
-})
-```
 
 ### `url(url, callback)`
 
