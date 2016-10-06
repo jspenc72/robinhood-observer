@@ -7,14 +7,20 @@
 
 [![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
 
+[![Bluebird](http://bluebirdjs.com/img/logo.png)](http://bluebirdjs.com/)
+
 
 A Reactive NodeJS Framework to interact with the private [Robinhood](https://www.robinhood.com/) API.
 
+[See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
+
 ## Features
+* Reactive
 * Quote Data
 * Buy, Sell Orders
 * Daily Fundamentals
 * Daily, Weekly, Monthly Historicals
+* Callback Support, Promise Support
 
 ## Installation
 ```bash
@@ -59,9 +65,7 @@ setTimeout(function(){
 
 ```
 
-## Observable Usage
-
-[See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
+## Observables
 
 ### `observeQuote(symbol, request_frequency?)`
 
