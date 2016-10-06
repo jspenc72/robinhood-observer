@@ -13,7 +13,10 @@
   "keywords": [
     "stocks",
     "trading",
-    "robinhood"
+    "robinhood",
+    "bluebird",
+    "rxjs",
+    "rx"
   ],
   "author": "jspenc72",
   "license": "ISC",
