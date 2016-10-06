@@ -167,7 +167,7 @@ var Robinhood = require('../src')(credentials, function(){
 
 # REST API Methods Unauthenticated
 
-All non methods
+All non Observable methods accept callback or promise style calls.
 
 ### `quote_data(stock, callback)`
 
