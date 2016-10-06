@@ -49,6 +49,9 @@ NodeJS Framework to make trades with the private [Robinhood](https://www.robinho
 ```bash
 $ npm install robinhood-observer --save
 ```
+## [Example Project](https://github.com/jspenc72/robinhood-observer-starter/blob/master/index.js)
+
+
 
 ## Usage
 
