@@ -6,6 +6,10 @@
   "scripts": {
     "test": "mocha test --recursive"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jspenc72/robinhood-observer.git"
+  },
   "keywords": [
     "stocks",
     "trading",
