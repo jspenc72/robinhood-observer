@@ -8,8 +8,7 @@
 [![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://nodejs.org/en/)
 
 
-NodeJS Framework to make trades with the private [Robinhood](https://www.robinhood.com/) API.
-
+A Reactive NodeJS Framework to interact with the private [Robinhood](https://www.robinhood.com/) API.
 
 ## Features
 * Quote Data
