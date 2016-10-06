@@ -13,7 +13,7 @@
 
 
 
-A Reactive NodeJS Framework to the [Robinhood](https://www.robinhood.com/) API.
+A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
