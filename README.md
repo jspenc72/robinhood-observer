@@ -8,41 +8,6 @@
 
 NodeJS Framework to make trades with the private [Robinhood](https://www.robinhood.com/) API.
 
-<!-- toc -->
-  * [Features](#features)
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [API](#api)
-    * [`observeQuote() // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`quote_data(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
-    * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
-      * [`trigger`](#trigger)
-      * [`time`](#time)
-    * [`place_sell_order(options, callback)`](#place-sell-orderoptions-callback)
-      * [`trigger`](#trigger)
-      * [`time`](#time)
-    * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
-    * [`url(url, callback)`](#urlurl-callback)
-
-* [Contributors](#contributors)
-* [TLDR](#api)
-  * [`watchlists(name, callback)`](#watchlistsname-callback)
-  * [`create_watch_list(name, callback)`](#create-watch-listname-callback)
-  * [`sp500_up(callback)`](#sp500-upcallback)
-  * [`sp500_down(callback)`](#sp500-downcallback)
-  * [`splits(instrument, callback)`](#splitsinstrument-callback)
-  * [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
-    * [Response](#response)
-  * [`accounts(callback)`](#accountscallback)
-  * [`user(callback)`](#usercallback)
-  * [`dividends(callback)`](#dividendscallback)
-  * [`orders(callback)`](#orderscallback)
-  * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
-  * [`investment_profile(callback)`](#investment-profilecallback)
-  * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
-<!-- toc stop -->
-
 
 ## Features
 * Quote Data
@@ -93,10 +58,9 @@ setTimeout(function(){
 
 ```
 
-## Useful Observables
+## Observable Usage
 
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
-
 
 ### `observeQuote(symbol, request_frequency?)`
 
@@ -154,6 +118,43 @@ var Robinhood = require('../src')(credentials, function(){
     }, 60000);
 });
 ```
+
+
+<!-- toc -->
+  * [Features](#features)
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [API](#api)
+    * [`observeQuote() // Not authenticated`](#quote-datastock-callback-not-authenticated)
+    * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)
+    * [`quote_data(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
+    * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
+      * [`trigger`](#trigger)
+      * [`time`](#time)
+    * [`place_sell_order(options, callback)`](#place-sell-orderoptions-callback)
+      * [`trigger`](#trigger)
+      * [`time`](#time)
+    * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
+    * [`url(url, callback)`](#urlurl-callback)
+
+* [Contributors](#contributors)
+* [TLDR](#api)
+  * [`watchlists(name, callback)`](#watchlistsname-callback)
+  * [`create_watch_list(name, callback)`](#create-watch-listname-callback)
+  * [`sp500_up(callback)`](#sp500-upcallback)
+  * [`sp500_down(callback)`](#sp500-downcallback)
+  * [`splits(instrument, callback)`](#splitsinstrument-callback)
+  * [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
+    * [Response](#response)
+  * [`accounts(callback)`](#accountscallback)
+  * [`user(callback)`](#usercallback)
+  * [`dividends(callback)`](#dividendscallback)
+  * [`orders(callback)`](#orderscallback)
+  * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
+  * [`investment_profile(callback)`](#investment-profilecallback)
+  * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
+<!-- toc stop -->
+
 
 
 # REST API Methods Unauthenticated
