@@ -73,6 +73,78 @@ describe('Robinhood', function() {
       }, 1500);
   });
 
+  it('Should not get basic user info without credentials - callback', function(done) {
+      Robinhood(null).userBasicInfo(function(err, response, body) {
+          if(err) {
+              done(err);
+              return;
+          }
+          should(body.detail).be.equal("Authentication credentials were not provided.");
+          done();
+      });
+  });
+
+  it('Should not get basic user info without credentials - promise', function(done) {
+      Robinhood(null).userBasicInfo()
+      .then(success => {
+        should(success.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+      .catch(err => {
+        console.log(err)
+        should(err.error.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+  });
+
+  it('Should not get additional user info without credentials - callback', function(done) {
+      Robinhood(null).userAdditionalInfo(function(err, response, body) {
+          if(err) {
+              done(err);
+              return;
+          }
+
+          should(body.detail).be.equal("Authentication credentials were not provided.");
+          done();
+      });
+  });
+
+  it('Should not get additional user info without credentials - promise', function(done) {
+      Robinhood(null).userAdditionalInfo()
+      .then(success => {
+        should(success.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+      .catch(err => {
+        should(err.error.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+  });
+
+  it('Should not get user investment profile without credentials - callback', function(done) {
+      Robinhood(null).userInvestmentProfile(function(err, response, body) {
+          if(err) {
+              done(err);
+              return;
+          }
+          should(body.detail).be.equal("Authentication credentials were not provided.");
+          done();
+      });
+  });
+
+  it('Should not get user investment profile without credentials - promise', function(done) {
+      Robinhood(null).userInvestmentProfile()
+      .then(success => {
+        should(success.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+      .catch(err => {
+        should(err.error.detail).be.equal("Authentication credentials were not provided.");
+        done();
+      })
+  });
+
+
   it('Should not get investment profile without credentials - callback', function(done) {
       Robinhood(null).investment_profile(function(err, response, body) {
           if(err) {
