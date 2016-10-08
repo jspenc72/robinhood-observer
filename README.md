@@ -158,7 +158,7 @@ setTimeout(function(){
         * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)    
 
     * [Methods](#methods)
-      * [`quote_data(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
+      * [`quote(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
       * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
         * [`trigger`](#trigger)
         * [`time`](#time)
@@ -195,7 +195,7 @@ setTimeout(function(){
 
 All non Observable methods accept callback or promise style calls.
 
-### `quote_data(stock, callback)`
+### `quote(stock, callback)`
 
 Get the user's quote data for a specified stock.
 
@@ -203,7 +203,7 @@ Get the user's quote data for a specified stock.
 //Promise Style
 var Robinhood = require('robinhood-observer')
 
-Robinhood(null).quote_data('AAPL')
+Robinhood(null).quote('AAPL')
 .then(success => {
   console.log(success);
 })
@@ -213,11 +213,11 @@ Robinhood(null).quote_data('AAPL')
 
 //Callback Style
 var Robinhood = require('robinhood-observer')(credentials, function(){
-    Robinhood.quote_data('AAPL', function(err, response, body){
+    Robinhood.quote('AAPL', function(err, response, body){
         if(err){
             console.error(err);
         }else{
-            console.log("quote_data");
+            console.log("quote");
             console.log(body);
 
         }
