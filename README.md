@@ -33,14 +33,38 @@ $ npm install robinhood-observer --save
 The [example project](https://github.com/jspenc72/robinhood-observer-starter) helps you get started right off the bat and demonstrates some of the cool things you can do with this library.
 
 
-## Basic Usage
+## Basic Usage Example
+1.  Monitor AAPL stocks WITHOUT using authentication
+2.  Trigger if the price changes.
+```js
 
+var Robinhood = require('robinhood-observer')     //Robinhood has not authenticated but can still be used for the unauthenticated subset of the API
+var observer = Robinhood(null).observeQuote(['AAPL'])   //Do not authenticate
+
+var buySubscription = observer
+                    .map(quote => quote.results)                            
+                    .distinct()                   //Only use distict results...
+                    .subscribe(x => {
+                        //This block of code is executed only when the price has changed.
+                        console.log(x);
+
+                    }, e => {
+                        console.error(e)
+                    }, () => console.log('buy subscription disposed'));
+
+//Unsubscribe to updates after 5 seconds.
+
+setTimeout(function(){
+ subscription.dispose();  
+}, 5000);
+
+```
 
 ## Real World Example
 
 1.  Monitor AAPL stocks
-1.  Create a "buy" subscription that triggers a buy order anytime the price drops to or below $100symbol (Required)
-2.  Create a "sell" subscription that triggers a sell order anytime the price jumps above $110
+2.  Create a "buy" subscription that triggers a buy order anytime the price drops to or below $100symbol (Required)
+3.  Create a "sell" subscription that triggers a sell order anytime the price jumps above $110
 
 ```js
 //The username and password you use to sign into the robinhood app.
