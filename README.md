@@ -63,7 +63,7 @@ setTimeout(function(){
 ## Real World Example
 
 1.  Monitor AAPL stocks
-2.  Create a "buy" subscription that triggers a buy order anytime the price drops to or below $100symbol (Required)
+2.  Create a "buy" subscription that triggers a buy order anytime the price drops to or below $100
 3.  Create a "sell" subscription that triggers a sell order anytime the price jumps above $110
 
 ```js
