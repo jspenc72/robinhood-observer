@@ -33,7 +33,14 @@ $ npm install robinhood-observer --save
 The [example project](https://github.com/jspenc72/robinhood-observer-starter) helps you get started right off the bat and demonstrates some of the cool things you can do with this library.
 
 
-## Usage
+## Basic Usage
+
+
+## Real World Example
+
+1.  Monitor AAPL stocks
+1.  Create a "buy" subscription that triggers a buy order anytime the price drops to or below $100symbol (Required)
+2.  Create a "sell" subscription that triggers a sell order anytime the price jumps above $110
 
 ```js
 //The username and password you use to sign into the robinhood app.
@@ -54,6 +61,26 @@ var Robinhood = require('robinhood-observer')     //Robinhood has not authentica
  *
  */
 
+ var buyOptions = {
+     type: 'limit',
+     quantity: 1,
+     bid_price: 100.00,
+     instrument: {
+         url: String,
+         symbol: String
+     }
+ }
+
+ var sellOptions = {
+     type: 'limit',
+     quantity: 1,
+     bid_price: 110.00,
+     instrument: {
+         url: String,
+         symbol: String
+     }
+ }
+
 var observer = Robinhood(credentials).observeQuote(['AAPL'])
 
 var buySubscription = observer
@@ -66,8 +93,15 @@ var buySubscription = observer
                         //Now Execute Buy Order
                         console.log(x);
 
-
-
+                        Robinhood.buy(buyOptions)
+                        .then(success => {
+                          //Buy Order has been placed
+                          console.log(success)
+                        })
+                        .catch(err => {
+                          //Error placing Buy Order
+                          console.error(err);
+                        });
                     }, e => {
                         console.error(e)
                     }, () => console.log('buy subscription disposed'));
@@ -83,19 +117,25 @@ var sellSubscription = observer
                       //Now Execute Sell Order
                         console.log(x);
 
-
-
+                        Robinhood.sell(sellOptions)
+                        .then(success => {
+                          //Sell Order has been placed
+                          console.log(success)
+                        })
+                        .catch(err => {
+                          //Error placing Sell Order
+                          console.error(err);
+                        });
                     }, e => {
                         console.error(e)
                     }, () => console.log('sell subscription disposed'));
 
 
- //Unsubscribe to updates after 6 seconds.
+ //Unsubscribe to updates after 5 seconds.
 
 setTimeout(function(){
   subscription.dispose();  
-}, 60000);
-
+}, 5000);
 ```
 
 ## Observables
@@ -560,7 +600,8 @@ Values can be:
 *   `immediate` : The order will be cancelled unless it is fulfilled immediately.
 *   `day` : The order will be cancelled at the end of the trading day.
 
-### `place_sell_order(options, callback)`
+### `place_sell_order(options, callback)      (Deprecated use .sell())`   
+### `sell(options, callback)`   
 
 Place a sell order on a specified stock.
 
@@ -580,13 +621,23 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
         // time: String,    // Defaults to "immediate"
         // type: String     // Defaults to "market"
     }
-    Robinhood.place_sell_order(options, function(error, response, body){
+    //Using Callback
+    Robinhood.sell(options, function(error, response, body){
         if(error){
             console.error(error);
         }else{
             console.log(body);
         }
     })
+    //As Promise
+    Robinhood.sell(options)
+    .then(success => {
+
+    })
+    .catch(err => {
+
+    })
+
 });
 
 ```
