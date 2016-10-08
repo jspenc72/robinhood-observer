@@ -255,6 +255,8 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
+
+
   /**
    * [quote description]
    * @param  [String]   symbol   [description]
@@ -280,6 +282,10 @@ function Robinhood(opts, callback) {
         });
     }
   };
+
+  api.quote_data(function(sybmol, callback){
+    ;api.quote(sybmol, callback);
+  });
   /**
    * [accounts description]
    * @param  {Function} callback                [description]
@@ -353,36 +359,39 @@ function Robinhood(opts, callback) {
    * @param  {Function} callback      [description]
    * @return {[Function or Promise]}  [description]
    */
-  api.cancel_order = function(order, callback){
-    if(order && typeof order == "object" && order.cancel){
-      var tUri = _apiUrl + order.cancel,
-          tOpts = {
-          uri: tUri
-        };
+   api.cancel = function(order, callback){
+     if(order && typeof order == "object" && order.cancel){
+       var tUri = _apiUrl + order.cancel,
+           tOpts = {
+           uri: tUri
+         };
 
-      if (callback && typeof callback == "function") {
-            if(order.cancel){
-              return _request.post(tOpts, callback);
-            }else{
-              callback({message: order.state=="cancelled" ? "Order already cancelled." : "Order cannot be cancelled.", order: order }, null, null);
-            }
-      }else{
-        return _rp.get(tOpts);
-      }
-    }else{
-      if(typeof order == "function"){
-        order(new Error("An order must be provided."), null, null);
-        return;
-      }else if (callback && typeof callback == "function") {
-        callback(new Error("An order must be provided."), null, null);
-      }else{
-        return new Promise(function (resolve, reject) {
-          setTimeout(function(){
-              reject(new Error("An order must be provided." ));
-          });
-        });
-      }
-    }
+       if (callback && typeof callback == "function") {
+             if(order.cancel){
+               return _request.post(tOpts, callback);
+             }else{
+               callback({message: order.state=="cancelled" ? "Order already cancelled." : "Order cannot be cancelled.", order: order }, null, null);
+             }
+       }else{
+         return _rp.get(tOpts);
+       }
+     }else{
+       if(typeof order == "function"){
+         order(new Error("An order must be provided."), null, null);
+         return;
+       }else if (callback && typeof callback == "function") {
+         callback(new Error("An order must be provided."), null, null);
+       }else{
+         return new Promise(function (resolve, reject) {
+           setTimeout(function(){
+               reject(new Error("An order must be provided." ));
+           });
+         });
+       }
+     }
+   };
+  api.cancel_order = function(order, callback){
+    api.cancel(order, callback);
   };
   /**
    * [_place_order description]
@@ -420,6 +429,15 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.place_buy_order = function(options, callback){
+    return api.buy(options, callback);
+  };
+  /**
+   * [buy description]
+   * @param  {[type]}   options  [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.buy = function(options, callback){
     if (callback && typeof callback == "function") {
       options.transaction = 'buy';
       return _place_order(options, callback);
@@ -427,6 +445,7 @@ function Robinhood(opts, callback) {
       return _place_order(options);
     }
   };
+
   /**
    * [place_sell_order description]
    * @param  {[type]}   options  [description]
@@ -434,6 +453,16 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.place_sell_order = function(options, callback){
+    return api.sell(options, callback);
+  };
+
+  /**
+   * [sell description]
+   * @param  {[type]}   options  [description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.sell = function(options, callback){
     options.transaction = 'sell';
     if (callback && typeof callback == "function") {
       return _place_order(options, callback);
@@ -441,6 +470,9 @@ function Robinhood(opts, callback) {
       return _place_order(options);
     }
   };
+
+
+
   /**
    * [positions description]
    * @param  {Function} callback [description]

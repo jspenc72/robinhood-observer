@@ -45,19 +45,50 @@ var credentials = {
 
 var Robinhood = require('robinhood-observer')     //Robinhood has not authenticated but can still be used for the unauthenticated subset of the API
 
-var subscription = Robinhood(null).observeQuote(['AAPL'])
+//Real World Example
+
+/*
+ * 1. Create a "buy" subscription that monitors AAPL and triggers a buy order anytime the price drops to or below $100
+ *
+ * 2. Create a "sell" subscription that monitors AAPL and triggers a sell order anytime the price jumps above $110
+ *
+ */
+
+var observer = Robinhood(credentials).observeQuote(['AAPL'])
+
+var buySubscription = observer
                     .map(quote => quote.results)
                     .filter((results, idx, obs) => {
-                        return results[0].last_trade_price == 113.0500      //Only update
+                        return results[0].last_trade_price <= 100      //Only update
                     })                                  
                     .distinct()                                             //Only use distict results...
                     .subscribe(x => {
-                        //Do something each time the price changes
+                        //Now Execute Buy Order
                         console.log(x);
+
+
 
                     }, e => {
                         console.error(e)
-                    }, () => console.log('disposed'));
+                    }, () => console.log('buy subscription disposed'));
+
+
+var sellSubscription = observer
+                    .map(quote => quote.results)
+                    .filter((results, idx, obs) => {
+                        return results[0].last_trade_price >= 110      //Only update
+                    })                                  
+                    .distinct()                                             //Only use distict results...
+                    .subscribe(x => {
+                      //Now Execute Sell Order
+                        console.log(x);
+
+
+
+                    }, e => {
+                        console.error(e)
+                    }, () => console.log('sell subscription disposed'));
+
 
  //Unsubscribe to updates after 6 seconds.
 
@@ -154,18 +185,26 @@ setTimeout(function(){
   * [Usage](#usage)
   * [API](#api)
     * [Observables](#observables)
-        * [`observeQuote() // Not authenticated`](#quote-datastock-callback-not-authenticated)
-        * [`observeOrders() // Not authenticated`](#quote-datastock-callback-not-authenticated)    
+        * [`observeQuote()                      // Not authenticated`](#quote-datastock-callback-not-authenticated)
+        * [`observeOrders()                     // Authentication Required`](#quote-datastock-callback-not-authenticated)    
 
     * [Methods](#methods)
-      * [`quote(stock, callback) // Not authenticated`](#quote-datastock-callback-not-authenticated)
-      * [`place_buy_order(options, callback)`](#place-buy-orderoptions-callback)
+      * [`quote(stock, callback)`](#quote-datastock-callback-not-authenticated)
+      * [`quote_data(stock, callback)`](#quote-datastock-callback-not-authenticated)                              (Deprecated use Robinhood.quote())
+      * [`buy(options, callback)                // Authentication Required`](#place-buy-orderoptions-callback)   
         * [`trigger`](#trigger)
         * [`time`](#time)
-      * [`place_sell_order(options, callback)`](#place-sell-orderoptions-callback)
+      * [`place_buy_order(options, callback)    // Authentication Required`](#place-buy-orderoptions-callback)    (Deprecated use Robinhood.buy())
         * [`trigger`](#trigger)
         * [`time`](#time)
-      * [`cancel_order(order, callback)`](#cancel-orderorder-callback)
+      * [`sell(options, callback)               // Authentication Required`](#place-sell-orderoptions-callback)
+        * [`trigger`](#trigger)
+        * [`time`](#time)
+      * [`place_sell_order(options, callback)   // Authentication Required`](#place-sell-orderoptions-callback)   (Deprecated use Robinhood.sell())
+        * [`trigger`](#trigger)
+        * [`time`](#time)
+      * [`cancel(order, callback)               // Authentication Required`](#cancel-orderorder-callback)  
+      * [`cancel_order(order, callback)         // Authentication Required`](#cancel-orderorder-callback)              (Deprecated use Robinhood.cancel())
       * [`url(url, callback)`](#urlurl-callback)
 
   *   [Contributors](#contributors)
