@@ -274,20 +274,23 @@ setTimeout(function(){
   *   [Contributors](#contributors)
 
   * [TLDR](#api)
-    * [`watchlists(name, callback)`](#watchlistsname-callback)
-    * [`create_watch_list(name, callback)`](#create-watch-listname-callback)
-    * [`sp500_up(callback)`](#sp500-upcallback)
-    * [`sp500_down(callback)`](#sp500-downcallback)
-    * [`splits(instrument, callback)`](#splitsinstrument-callback)
-    * [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
-      * [Response](#response)
-    * [`accounts(callback)`](#accountscallback)
-    * [`user(callback)`](#usercallback)
-    * [`dividends(callback)`](#dividendscallback)
-    * [`orders(callback)`](#orderscallback)
-    * [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
-    * [`investment_profile(callback)`](#investment-profilecallback)
-    * [`instruments(symbol, callback)`](#instrumentssymbol-callback)
+    *   [`watchlists(name, callback)`](#watchlistsname-callback)
+    *   [`create_watch_list(name, callback)`](#create-watch-listname-callback)
+    *   [`sp500_up(callback)`](#sp500-upcallback)
+    *   [`sp500_down(callback)`](#sp500-downcallback)
+    *   [`splits(instrument, callback)`](#splitsinstrument-callback)
+    *   [`fundamentals(symbol, callback)`](#fundamentalssymbol-callback)
+        *   [Response](#response)
+    *   [`accounts(callback)`](#accountscallback)
+    *   [`user(callback)`](#usercallback)
+    *   [`dividends(callback)`](#dividendscallback)
+    *   [`orders(callback)`](#orderscallback)
+    *   [`historicals(symbol, intv, span, callback)`](#historicalssymbol-intv-span-callback)
+    *   [`investment_profile(callback)`](#investment-profilecallback)                                         (Deprecated use Robinhood.userInvestmentProfile())
+    *   [`userInvestmentProfile(callback)`](#investment-profilecallback)
+    *   [`userBasicInfo(callback)`](#investment-profilecallback)
+    *   [`userAdditionalInfo(callback)`](#investment-profilecallback)
+    *   [`instruments(symbol, callback)`](#instrumentssymbol-callback)
 
 
 <!-- toc stop -->
@@ -409,37 +412,59 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 ## REST API Methods Authenticated
 Before using these methods, make sure you have initialized Robinhood using the snippet above.
 
-### `investment_profile(callback)`
+### `investment_profile(callback) (Deprecated)`      
+### `userInvestmentProfile()`       
+
+
 Get the current user's investment profile.
 
 ```js
 var credentials = require("../credentials.js")();
 var Robinhood = require('robinhood-observer')(credentials, function(){
-    Robinhood.investment_profile(function(err, response, body){
-        if(err){
-            console.error(err);
-        }else{
-            console.log("investment_profile");
-            console.log(body);
-                //    { annual_income: '25000_39999',
-                //      investment_experience: 'no_investment_exp',
-                //      updated_at: '2015-06-24T17:14:53.593009Z',
-                //      risk_tolerance: 'low_risk_tolerance',
-                //      total_net_worth: '0_24999',
-                //      liquidity_needs: 'very_important_liq_need',
-                //      investment_objective: 'income_invest_obj',
-                //      source_of_funds: 'savings_personal_income',
-                //      user: 'https://api.robinhood.com/user/',
-                //      suitability_verified: true,
-                //      tax_bracket: '',
-                //      time_horizon: 'short_time_horizon',
-                //      liquid_net_worth: '0_24999' }
-
-        }
+    Robinhood.userInvestmentProfile()
+    .then(success => {
+        console.log(success);
+    })
+    .catch(err => {
+        console.error(err);
     })
 });
 ```
 
+### `userBasicInfo()`
+
+Get basic info about the current user's
+
+```js
+var credentials = require("../credentials.js")();
+var Robinhood = require('robinhood-observer')(credentials, function(){
+    Robinhood.userBasicInfo()
+    .then(success => {
+        console.log(success);
+    })
+    .catch(err => {
+        console.error(err);
+    })
+});
+```
+
+
+### `userAdditionalInfo()`
+
+Get additional info about the current user's
+
+```js
+var credentials = require("../credentials.js")();
+var Robinhood = require('robinhood-observer')(credentials, function(){
+    Robinhood.userAdditionalInfo()
+    .then(success => {
+        console.log(success);
+    })
+    .catch(err => {
+        console.error(err);
+    })
+});
+```
 
 ### `instruments(symbol, callback)`
 

@@ -322,6 +322,75 @@ function Robinhood(opts, callback) {
   };
 
   /**
+   * [userBasicInfo description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.userBasicInfo = function(callback){
+    var tUri = _apiUrl,
+        tOpts = {
+      uri: _apiUrl + _endpoints.basic_info
+    };
+    if (callback && typeof callback == "function") {
+      return _request.get(tOpts, callback);
+    }else{
+      return _rp.get(tOpts);
+    }
+  };
+  /**
+   * [userAdditionalInfo description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.userAdditionalInfo = function(callback){
+    var tUri = _apiUrl,
+        tOpts = {
+      uri: _apiUrl + _endpoints.basic_info
+    };
+    if (callback && typeof callback == "function") {
+      return _request.get(tOpts, callback);
+    }else{
+      return _rp.get(tOpts);
+    }
+  };
+
+  /**
+   * [userEmployment description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.userEmployment = function(callback){
+    var tUri = _apiUrl,
+        tOpts = {
+      uri: _apiUrl + _endpoints.additional_info
+    };
+    if (callback && typeof callback == "function") {
+      return _request.get(tOpts, callback);
+    }else{
+      return _rp.get(tOpts);
+    }
+  };
+
+
+  /**
+   * [userInvestmentProfile description]
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  api.userInvestmentProfile = function(callback){
+    var tUri = _apiUrl,
+        tOpts = {
+      uri: _apiUrl + _endpoints.investment_profile
+    };
+    if (callback && typeof callback == "function") {
+      return _request.get(tOpts, callback);
+    }else{
+      return _rp.get(tOpts);
+    }
+  };
+
+
+  /**
    * [dividends description]
    * @param  {Function} callback [description]
    * @return {[Function or Promise]}            [description]
