@@ -184,6 +184,30 @@ describe('Robinhood', function() {
       });
   });
 
+  it('Should handle callback when getting quotes with .quote_data() for Array ' + TEST_SYMBOLS, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOLS, function(err, response, body) {
+          if(err) {
+              done(err);
+              return;
+          }
+          should(body.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
+          should(body.results[1].symbol).be.equal(TEST_SYMBOLS[1]);
+          done();
+      });
+  });
+
+  it('Should handle callback when getting quotes with .quote_data() for symbol: ' + TEST_SYMBOL, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOL, function(err, response, body) {
+          if(err) {
+              done(err);
+              return;
+          }
+          should(body.results[0].symbol).be.equal(TEST_SYMBOL);
+          done();
+      });
+  });
+
+
   it('Should handle callback when getting quotes for Array ' + TEST_SYMBOLS, function(done) {
       Robinhood(null).quote(TEST_SYMBOLS, function(err, response, body) {
           if(err) {
@@ -204,6 +228,39 @@ describe('Robinhood', function() {
           }
           should(body.results[0].symbol).be.equal(TEST_SYMBOL);
           done();
+      });
+  });
+
+  it('Should return promise when getting quotes with .quote_data() without callback for Array:' + TEST_SYMBOLS, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOLS)
+      .then(success => {
+        should(success.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
+        done();
+      });
+  });
+
+  it('Should return promise when getting quotes with .quote_data()  without callback for symbol:' + TEST_SYMBOL, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOL)
+      .then(success => {
+        should(success.results[0].symbol).be.equal(TEST_SYMBOL);
+        done();
+      });
+  });
+
+
+  it('Should return promise when getting quotes with .quote_data() without callback for Array:' + TEST_SYMBOLS, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOLS)
+      .then(success => {
+        should(success.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
+        done();
+      });
+  });
+
+  it('Should return promise when getting quotes with .quote_data() without callback for symbol:' + TEST_SYMBOL, function(done) {
+      Robinhood(null).quote_data(TEST_SYMBOL)
+      .then(success => {
+        should(success.results[0].symbol).be.equal(TEST_SYMBOL);
+        done();
       });
   });
 
@@ -315,8 +372,19 @@ describe('Robinhood', function() {
       })
   });
 
-  it('Should not send cancel orders request without order parameter - callback', function(done) {
+  it('Should not send cancel orders request with cancel_order() without order parameter - callback', function(done) {
       Robinhood(null).cancel_order(function(err, response, body) {
+          if(err) {
+              done();
+              return;
+          }
+          should(body.detail).be.equal("Authentication credentials were not provided.");
+          done();
+      });
+  });
+
+  it('Should not send cancel orders request with cancel() without order parameter - callback', function(done) {
+      Robinhood(null).cancel(function(err, response, body) {
           if(err) {
               done();
               return;

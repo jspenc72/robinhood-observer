@@ -283,15 +283,15 @@ function Robinhood(opts, callback) {
     }
   };
 
-  api.quote_data(function(sybmol, callback){
-    ;api.quote(sybmol, callback);
-  });
+  api.quote_data = function(sybmol, callback){
+    return api.quote(sybmol, callback);
+  };
   /**
    * [accounts description]
    * @param  {Function} callback                [description]
    * @return {[Function or Promise]}            [description]
    */
-  api.accounts= function(callback){
+  api.accounts = function(callback){
     var tUri = _apiUrl,
         tOpts = {
       uri: _apiUrl + _endpoints.accounts
@@ -354,7 +354,7 @@ function Robinhood(opts, callback) {
     }
   };
   /**
-   * [cancel_order description]
+   * [cancel description]
    * @param  {[type]}   order         [description]
    * @param  {Function} callback      [description]
    * @return {[Function or Promise]}  [description]
@@ -390,8 +390,14 @@ function Robinhood(opts, callback) {
        }
      }
    };
+   /**
+    * [cancel_order description]
+    * @param  {[type]}   order         [description]
+    * @param  {Function} callback      [description]
+    * @return {[Function or Promise]}  [description]
+    */
   api.cancel_order = function(order, callback){
-    api.cancel(order, callback);
+    return api.cancel(order, callback);
   };
   /**
    * [_place_order description]
