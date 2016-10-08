@@ -299,9 +299,9 @@ setTimeout(function(){
 
 # REST API Methods Unauthenticated
 
-All non Observable methods accept callback or promise style calls.
+All non Observable methods return a promise unless a callback is provided as the last optional parameter.
 
-### `quote(stock, callback)`
+### `quote(stock)`
 
 Get the user's quote data for a specified stock.
 
