@@ -14,6 +14,9 @@
 
 A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 
+[![NPM](https://nodei.co/npm/robinhood-observer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/robinhood-observer/)
+[![NPM](https://nodei.co/npm-dl/robinhood-observer.png?months=3&height=3)](https://nodei.co/npm/robinhood-observer/)
+
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 ## Features
@@ -108,14 +111,24 @@ var Robinhood = require('robinhood-observer')     //Robinhood has not authentica
 var observer = Robinhood(credentials).observeQuote(['AAPL'])
 
 var buySubscription = observer
-                    .map(quote => quote.results)
+                    .map(quote => {
+                      //Convert string to float.
+                      quote.results.last_trade_price = parseFloat(quote.results.last_trade_price);
+                      return quote.results
+                    })
                     .filter((results, idx, obs) => {
                         return results[0].last_trade_price <= 100      //Only update
                     })                                  
-                    .distinct()                                             //Only use distict results...
+                    .distinct()                                             //Only use distinct results...
                     .subscribe(x => {
                         //Now Execute Buy Order
                         console.log(x);
+
+                        //Set the bid_price one cent lower than the last_trade_price;
+                        buyOptions.bid_price = x.last_trade_price-0.01;
+
+                        buyOptions.instrument.sybmol = x.symbol;
+                        buyOptions.instrument.url = x.symbol;
 
                         Robinhood.buy(buyOptions)
                         .then(success => {
@@ -158,7 +171,8 @@ var sellSubscription = observer
  //Unsubscribe to updates after 5 seconds.
 
 setTimeout(function(){
-  subscription.dispose();  
+  buySubscription.dispose();  
+  sellSubscription.dispose();  
 }, 5000);
 ```
 

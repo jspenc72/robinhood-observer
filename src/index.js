@@ -476,6 +476,9 @@ function Robinhood(opts, callback) {
    */
   var _place_order = function(options, callback){
     var tUri = _apiUrl + _endpoints.orders;
+    //Get instrument url
+
+
     var tOpts = {
         uri: tUri,
         form: {
@@ -513,11 +516,18 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.buy = function(options, callback){
-    if (callback && typeof callback == "function") {
-      options.transaction = 'buy';
-      return _place_order(options, callback);
+
+    //Check if instrument url is provided.
+
+    if(options.instrument.url.length>0){
+      if (callback && typeof callback == "function") {
+        options.transaction = 'buy';
+        return _place_order(options, callback);
+      }else{
+        return _place_order(options);
+      }
     }else{
-      return _place_order(options);
+
     }
   };
 
