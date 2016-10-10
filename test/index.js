@@ -91,7 +91,6 @@ describe('Robinhood', function() {
         done();
       })
       .catch(err => {
-        console.log(err)
         should(err.error.detail).be.equal("Authentication credentials were not provided.");
         done();
       })
@@ -697,4 +696,86 @@ describe('Robinhood', function() {
           done();
       });
     });
+
+    //It should place_buy_order with api.buy() - promise
+
+    it(`It should place_buy_order with format api.buy("AAPL", {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00
+        }) - promise`, function(done) {
+
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+    it(`It should place_buy_order with format api.buy("AAPL",     {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00,
+            instrument: {
+                symbol: "AAPL"
+            }
+        }) - promise`, function(done) {
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+    it(`It should place_buy_order with api.buy("AAPL",     {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00,
+            instrument: {
+                symbol: "AAPL",
+                url: ""
+            }
+        }) - promise`, function(done) {
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+
+
+    it(`It should place_buy_order with format api.buy("AAPL", {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00
+        }, callback) - callback`, function(done) {
+
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+    it(`It should place_buy_order with format api.buy("AAPL",     {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00,
+            instrument: {
+                symbol: "AAPL"
+            }
+        }, callback) - callback`, function(done) {
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+    it(`It should place_buy_order with api.buy("AAPL",     {
+            type: 'limit',
+            quantity: 1,
+            bid_price: 110.00,
+            instrument: {
+                symbol: "AAPL",
+                url: ""
+            }
+        }, callback) - callback`, function(done) {
+      //First Get Quote
+      should(false).be.equal("Test has not been written");
+      done();
+    });
+
+
 });

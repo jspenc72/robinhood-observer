@@ -2,7 +2,8 @@ var RxJS = require('rxjs'),
     Rx = require('rx'),
     Promise = require("bluebird"),
     request = require('request'),
-    rp = require('request-promise');
+    rp = require('request-promise'),
+    _ = require("lodash");
 
 'use strict';
 
@@ -329,7 +330,7 @@ function Robinhood(opts, callback) {
   api.userBasicInfo = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.basic_info
+      uri: _apiUrl + _endpoints.user_basic_info
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -345,7 +346,7 @@ function Robinhood(opts, callback) {
   api.userAdditionalInfo = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.basic_info
+      uri: _apiUrl + _endpoints.user_additional_info
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -517,9 +518,10 @@ function Robinhood(opts, callback) {
    */
   api.buy = function(options, callback){
 
+    //Check if instrument is provided.
     //Check if instrument url is provided.
 
-    if(options.instrument.url.length>0){
+    if(options.instrument || options.instrument.url.length>0){
       if (callback && typeof callback == "function") {
         options.transaction = 'buy';
         return _place_order(options, callback);
@@ -527,7 +529,51 @@ function Robinhood(opts, callback) {
         return _place_order(options);
       }
     }else{
+      //If no instrument is provided, get it.
+      //If no instrument url is provided, get it.
+      if(typeof options == "object"){
+        //instrument was included but no instrument url provided
+        if(options.instrument.symbol){
+          //Simply get the instrument, append the url and send the buy request
+          api.instruments(options.instrument.symbol)
+          .then(result => {
+            _.forEach(result.results, (value, key) => {
+              if(value.symbol==options.instrument.symbol){
+                console.log("Got Instrument for: "+ ticker)
+                options.instrument.url = value.url;
+                return _place_order(options);
+              }else{
+                console.error("Unable to set instrument for order.");
+              }
+            });
+          })
+          .catch(err => {
+            console.error(err);
+          });
+        }
+      }else if(typeof options == "string" && typeof callback == "object"){
+        //Using alternative syntax api.buy(symbol:String, options:Object)
+        var symbol = options;
+            options = callback;
 
+        api.instruments(symbol)
+        .then(result => {
+          _.forEach(result.results, (value, key) =>{
+            if(value.symbol==options.instrument.symbol){
+              options.instrument.url = value.url;
+              console.log("Got Instrument for: "+ options)
+              return _place_order(options);
+            }else{
+              console.error("Unable to set instrument for order.");
+            }
+          });
+        })
+        .catch(err => {
+          console.error(err);
+        });
+      }else{
+        console.log("Invalid request parameters were sent.");
+      }
     }
   };
 

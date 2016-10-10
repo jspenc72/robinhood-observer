@@ -7,8 +7,6 @@
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
 
-
-
 [![RxJS](http://reactivex.io/assets/Rx_Logo_S.png)](http://reactivex.io)
 [![Bluebird](http://bluebirdjs.com/img/logo.png)](http://bluebirdjs.com/)
 
