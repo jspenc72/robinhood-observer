@@ -483,7 +483,7 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 ```js
 var credentials = require("../credentials.js")();
 var Robinhood = require('robinhood-observer')(credentials, function(){
-    Robinhood.instruments('AAPL',function(err, response, body){
+    Robinhood.instruments('AAPL', function(err, response, body){
         if(err){
             console.error(err);
         }else{
