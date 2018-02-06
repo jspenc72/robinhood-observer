@@ -1,6 +1,9 @@
 sudo: false
 language: node_js
 node_js:
-  - 'iojs'
-  - '6.7.0'
-  - '6.5.0'
+  - '8'
+  - '7'
+  - '6'
+
+after_success:
+  - './node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls'

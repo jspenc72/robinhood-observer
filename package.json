@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Unofficial Wrapper for Robinhood Free Stock Trading ",
   "main": "src/index.js",
   "scripts": {
@@ -20,6 +20,10 @@
   ],
   "author": "jspenc72",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jspenc72/robinhood-observer/issues"
+  },
+  "homepage": "https://github.com/jspenc72/robinhood-observer",
   "dependencies": {
     "bluebird": "^3.4.6",
     "lodash": "^4.16.4",
@@ -30,6 +34,9 @@
   },
   "devDependencies": {
     "mocha": "^3.1.0",
-    "should": "^4.3.0"
+    "should": "^4.3.0",
+    "ava": "^0.17.0",
+    "coveralls": "^2.11.15",
+    "nyc": "^10.0.0"
   }
 }
