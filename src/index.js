@@ -22,6 +22,7 @@ function Robinhood(opts, callback) {
       // Private API Endpoints
       _endpoints = {
         login:  'api-token-auth/',
+        logout: 'api-token-logout/',
         investment_profile: 'user/investment_profile/',
         accounts: 'accounts/',
         ach_iav_auth: 'ach/iav/auth/',
@@ -135,6 +136,26 @@ function Robinhood(opts, callback) {
     });
   }
 
+  function _set_account() {
+    return new Promise(function(resolve, reject) {
+      api.accounts(function(err, httpResponse, body) {
+        if (err) {
+          reject(err);
+        }
+        // Being defensive when user credentials are valid but RH has not approved an account yet
+        if (body.results && body.results instanceof Array && body.results.length > 0) {
+          _private.account = body.results[0].url;
+        }
+        resolve();
+      });
+    });
+  }
+
+  function _build_auth_header(token) {
+    _private.headers.Authorization = 'Token ' + token;
+  }
+
+
   /* +--------------------------------+ *
    * |      API observables      | *
    * +--------------------------------+ */
@@ -196,8 +217,21 @@ function Robinhood(opts, callback) {
   };
 
   /* +--------------------------------+ *
-   * |      REST API methods        | *
+   * |      Robinhood API methods        | *
    * +--------------------------------+ */
+
+
+   api.auth_token = function() {
+     return _private.auth_token;
+   };
+
+   // Invoke robinhood logout.  Note: User will need to reintantiate
+   // this package to get a new token!
+   api.expire_token = function(callback) {
+     return _request.post({
+       uri: _apiUrl + _endpoints.logout
+     }, callback);
+   };
 
   /**
    * [investment_profile description]
