@@ -21,27 +21,28 @@ function Robinhood(opts, callback) {
   var _options = opts || {},
       // Private API Endpoints
       _endpoints = {
-        login:  'api-token-auth/',
-        logout: 'api-token-logout/',
+        login: 'oauth2/token/',
+        logout: 'oauth2/revoke_token/',
         investment_profile: 'user/investment_profile/',
         accounts: 'accounts/',
         ach_iav_auth: 'ach/iav/auth/',
-        ach_relationships:  'ach/relationships/',
-        ach_transfers:'ach/transfers/',
-        ach_deposit_schedules: "ach/deposit_schedules/",
+        ach_relationships: 'ach/relationships/',
+        ach_transfers: 'ach/transfers/',
+        ach_deposit_schedules: 'ach/deposit_schedules/',
         applications: 'applications/',
-        dividends:  'dividends/',
+        dividends: 'dividends/',
         edocuments: 'documents/',
-        instruments:  'instruments/',
-        margin_upgrade:  'margin/upgrades/',
-        markets:  'markets/',
-        notifications:  'notifications/',
-        notifications_devices: "notifications/devices/",
+        earnings: 'marketdata/earnings/',
+        instruments: 'instruments/',
+        margin_upgrade: 'margin/upgrades/',
+        markets: 'markets/',
+        notifications: 'notifications/',
+        notifications_devices: 'notifications/devices/',
         orders: 'orders/',
-        cancel_order: 'orders/',      //API expects https://api.robinhood.com/orders/{{orderId}}/cancel/
+        cancel_order: 'orders/', //API expects https://api.robinhood.com/orders/{{orderId}}/cancel/
         password_reset: 'password_reset/request/',
         quotes: 'quotes/',
-        document_requests:  'upload/document_requests/',
+        document_requests: 'upload/document_requests/',
         user: 'user/',
 
         user_additional_info: "user/additional_info/",
@@ -49,13 +50,20 @@ function Robinhood(opts, callback) {
         user_employment: "user/employment/",
         user_investment_profile: "user/investment_profile/",
 
+        options_chains: 'options/chains/',
+        options_positions: 'options/aggregate_positions/',
+        options_instruments: 'options/instruments/',
+        options_marketdata: 'marketdata/options/',
+
         watchlists: 'watchlists/',
         positions: 'positions/',
         fundamentals: 'fundamentals/',
         sp500_up: 'midlands/movers/sp500/?direction=up',
         sp500_down: 'midlands/movers/sp500/?direction=down',
-        news: 'midlands/news/'
+        news: 'midlands/news/',
+        tag: 'midlands/tags/tag/'
     },
+    _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
     _isInit = false,
     _request = request.defaults(),
     _rp = rp.defaults(),
@@ -70,25 +78,43 @@ function Robinhood(opts, callback) {
     api = {};
 
   function _init(){
-    _private.username = _options.username;
-    _private.password = _options.password;
+    _private.username = _.has(_options, 'username') ? _options.username : null;
+    _private.password = _.has(_options, 'password') ? _options.password : null;
+    _private.auth_token = _.has(_options, 'token') ? _options.token : null;
+    _private.device_token = _.has(_options, 'device_token') ? _options.device_token : null;
     _private.headers = {
-        'Accept': '*/*',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-        'X-Robinhood-API-Version': '1.0.0',
-        'Connection': 'keep-alive',
-        'User-Agent': 'Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)'
+      'Host': 'api.robinhood.com',
+      'Accept': '*/*',
+      'Accept-Language': 'en-us',
+      'Accept-Encoding': 'gzip, deflate',
+      'Referer': 'https://robinhood.com/',
+      'Origin': 'https://robinhood.com'
     };
     _setHeaders();
-    _login(function(){
-      _isInit = true;
+    if (!_private.auth_token) {
+      _login(function (data) {
+        
+        _isInit = true;
 
-      if (callback) {
-        callback.call();
-      }
-    });
+        if (callback) {
+          if (data) {
+            callback(data);
+          } else {
+            callback.call();
+          }
+        }
+      });
+    } else {
+      _build_auth_header(_private.auth_token);
+      _setHeaders();
+      _set_account()
+        .then(function () {
+          callback.call();
+        })
+        .catch(function (err) {
+          throw err;
+        });
+    }
   }
 
   function _setHeaders(){
@@ -105,45 +131,59 @@ function Robinhood(opts, callback) {
     });
   }
 
-  function _login(callback){
-    _request.post({
-      uri: _apiUrl + _endpoints.login,
-      form: {
-        password: _private.password,
-        username: _private.username
-      }
-    }, function(err, httpResponse, body) {
-      if(err) {
-        throw (err);
-      }
-
-      _private.auth_token = body.token;
-      _private.headers.Authorization = 'Token ' + _private.auth_token;
-
-      _setHeaders();
-
-      // Set account
-      api.accounts(function(err, httpResponse, body) {
+  function _login(callback) {
+    _request.post(
+      {
+        uri: _apiUrl + _endpoints.login,
+        form: {
+          grant_type: 'password',
+          scope: 'internal',
+          client_id: _clientId,
+          expires_in: 86400,
+          device_token: _private.device_token,
+          password: _private.password,
+          username: _private.username
+        }
+      },
+      function (err, httpResponse, body) {
         if (err) {
-          throw (err);
+          throw err;
         }
 
-        if (body.results) {
-          _private.account = body.results[0].url;
+        if (!body.access_token) {
+          throw new Error('token not found ' + JSON.stringify(httpResponse));
         }
-        callback.call();
-      });
-    });
+        _private.auth_token = body.access_token;
+        _private.refresh_token = body.refresh_token;
+        _build_auth_header(_private.auth_token);
+
+        _setHeaders();
+
+        // Set account
+        _set_account()
+          .then(function () {
+            callback.call();
+          })
+          .catch(function (err) {
+            throw err;
+          });
+      }
+    );
   }
 
   function _set_account() {
-    return new Promise(function(resolve, reject) {
-      api.accounts(function(err, httpResponse, body) {
+    return new Promise(function (resolve, reject) {
+      api.accounts(function (err, httpResponse, body) {
         if (err) {
           reject(err);
         }
+        console.log('_set_account', body)
         // Being defensive when user credentials are valid but RH has not approved an account yet
-        if (body.results && body.results instanceof Array && body.results.length > 0) {
+        if (
+          body.results &&
+          body.results instanceof Array &&
+          body.results.length > 0
+        ) {
           _private.account = body.results[0].url;
         }
         resolve();
@@ -152,9 +192,81 @@ function Robinhood(opts, callback) {
   }
 
   function _build_auth_header(token) {
-    _private.headers.Authorization = 'Token ' + token;
+    _private.headers.Authorization = 'Bearer ' + token;
   }
 
+  function options_from_chain({ next, results }) {
+    return new Promise((resolve, reject) => {
+      if (!next) return resolve(results);
+      _request.get(
+        {
+          url: next
+        },
+        (err, response, body) =>
+          resolve(
+            options_from_chain({
+              next: body.next,
+              results: results.concat(body.results)
+            })
+          )
+      );
+    });
+  }
+
+  function filter_bad_options(options) {
+    return options.filter(option => option.tradability == 'tradable');
+  }
+
+  function stitch_options_with_details([details, options]) {
+    let paired = details.map(detail => {
+      let match = options.find(option => option.url == detail.instrument);
+      if (match) {
+        Object.keys(match).forEach(key => (detail[key] = match[key]));
+      }
+      return detail;
+    });
+    // Remove nulls
+    return paired.filter(item => item);
+  }
+
+  function get_options_details(options) {
+    let grouped_options = group_options_by_max_per_request(options);
+    return Promise.all(
+      grouped_options.map(group => {
+        let option_urls = group.map(option => encodeURIComponent(option.url));
+        return new Promise((resolve, reject) => {
+          let request = _request.get(
+            {
+              uri:
+                _apiUrl +
+                _endpoints.options_marketdata +
+                '?instruments=' +
+                option_urls.join('%2C')
+            },
+            (err, response, { results }) => {
+              resolve(results);
+            }
+          );
+        });
+      })
+    ).then(options_details => {
+      return [options_details.flat(), grouped_options.flat()];
+    });
+  }
+
+  const max_options_details_per_request = 17;
+  function group_options_by_max_per_request(options) {
+    let filtered = filter_bad_options(options);
+    let groups = [];
+    for (
+      let i = 0;
+      i < filtered.length - 1;
+      i += max_options_details_per_request
+    ) {
+      groups.push(filtered.slice(i, i + max_options_details_per_request));
+    }
+    return groups;
+  }
 
   /* +--------------------------------+ *
    * |      API observables      | *
