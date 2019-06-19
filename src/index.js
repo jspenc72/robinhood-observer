@@ -99,7 +99,6 @@ function Robinhood(opts, callback) {
       if(_deviceTokenIsCached()){
         _readCachedDeviceToken()
         .then(contents => {
-          console.log('_readCachedDeviceToken', contents.device_token)
           _private.device_token = contents.device_token
           _private.access_token = contents.access_token
           _private.refresh_token = contents.refresh_token
@@ -236,7 +235,6 @@ function Robinhood(opts, callback) {
   }
 
   function _login(callback) {
-    console.log(_private)
     _request.post(
       {
         uri: _apiUrl + _endpoints.login,
@@ -292,7 +290,6 @@ function Robinhood(opts, callback) {
         }else if(body.mfa_required == true && body.mfa_type == 'sms') {
           throw new Error('You must disable 2FA on your account for this to work.')
         } else if (!body.access_token) {
-          console.log(body)
           throw new Error('token not found ' + JSON.stringify(httpResponse));
         } else{
 
