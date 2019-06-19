@@ -142,7 +142,6 @@ function Robinhood(opts, callback) {
             reject(err)
             throw err;
           }else{
-            console.log('_respond2faChallenge', body)
             resolve(body)
           }
         })
@@ -202,7 +201,6 @@ function Robinhood(opts, callback) {
           }else{
             resolve(body)
           }
-          console.log('_requestBearerToken', body)
           _private.access_token = body.access_token
           _private.refresh_token = body.refresh_token
         })    
@@ -231,8 +229,6 @@ function Robinhood(opts, callback) {
         if (err) {
           throw err;
         }
-        console.log('_login', body)
-
         if(httpResponse.body.detail == "Request blocked, challenge issued."){
           _collect2fa()
           .then(user_input => {
@@ -240,9 +236,13 @@ function Robinhood(opts, callback) {
              return _respond2faChallenge(parseInt(user_input), body.challenge.id)
           }).then((body) => {
             // 2fa Challenge
-            console.log('after _respond2faChallenge', body)
-
-            return _requestBearerToken()
+            // Check if 2fa succeeded
+            if (body.detail == "Challenge response is invalid."){
+              console.log("The 2FA code you entered was incorrect.")
+              process.exit(1)
+            }else{
+              return _requestBearerToken()
+            }
           })
           .then(body => {
             _build_auth_header(_private.access_token);
@@ -277,7 +277,6 @@ function Robinhood(opts, callback) {
         if (err) {
           reject(err);
         }
-        console.log('_set_account', body, _private.headers)
         // Being defensive when user credentials are valid but RH has not approved an account yet
         if (
           body.results &&
@@ -299,8 +298,7 @@ function Robinhood(opts, callback) {
     process.stdin.setEncoding('utf-8');
 
     // Prompt user to input data in console.
-    console.log("Please input text in command line.");
-
+    console.log("Enter the 2FA code that was sent to you via sms.");
     return new Promise((resolve, reject) => {
       // When user input data and click enter key.
       process.stdin.on('data', function (data) {
