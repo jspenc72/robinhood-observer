@@ -4,6 +4,7 @@
 [![NodeJS](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://nodejs.org/en/)
 [![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
 [![NodeJS](https://img.shields.io/badge/node-6.5.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
 
