@@ -19,6 +19,7 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 ## Features
+*   Works with Robinhoods New 2FA Authentication (As of June 2019)
 *   Reactive
 *   Quote Data
 *   Buy, Sell Orders
