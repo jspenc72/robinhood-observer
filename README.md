@@ -174,6 +174,12 @@ setTimeout(function(){
   sellSubscription.dispose();
 }, 5000);
 ```
+### Caching device_token
+
+
+```bash
+ SHOULD_CACHE_CREDENTIALS=true node examples/observable_quotes.js 
+```
 
 ## Observables
 

@@ -4,6 +4,7 @@ var RxJS = require('rxjs'),
     request = require('request'),
     rp = require('request-promise'),
     _ = require("lodash");
+    fs = require("fs");
 
 'use strict';
 
@@ -88,21 +89,48 @@ function Robinhood(opts, callback) {
       'Accept-Language': 'en-us',
       'Accept-Encoding': 'gzip, deflate',
       'Referer': 'https://robinhood.com/',
-      'Origin': 'https://robinhood.com'
+      'Origin': 'https://robinhood.com',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15',
+      'X-Robinhood-API-Version': '1.275.0'
     };
     _setHeaders();
     if (!_private.auth_token) {
-      _login(function (data) {
-        _isInit = true;
+      // Check if cached
+      if(_deviceTokenIsCached()){
+        _readCachedDeviceToken()
+        .then(contents => {
+          console.log('_readCachedDeviceToken', contents.device_token)
+          _private.device_token = contents.device_token
+          _private.access_token = contents.access_token
+          _private.refresh_token = contents.refresh_token
+          _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = contents.challenge_id
+          _login(function (data) {
+            _isInit = true;
+    
+            if (callback) {
+              if (data) {
+                callback(data);
+              } else {
+                callback.call();
+              }
+            }
+          });          
+        })
 
-        if (callback) {
-          if (data) {
-            callback(data);
-          } else {
-            callback.call();
+      }else{
+        _private.device_token =  _generateDeviceToken()
+        _login(function (data) {
+          _isInit = true;
+  
+          if (callback) {
+            if (data) {
+              callback(data);
+            } else {
+              callback.call();
+            }
           }
-        }
-      });
+        });
+      }
     } else {
       _build_auth_header(_private.auth_token);
       _setHeaders();
@@ -205,12 +233,10 @@ function Robinhood(opts, callback) {
           _private.refresh_token = body.refresh_token
         })    
     })
-
   }
 
   function _login(callback) {
-    _private.device_token =  _generateDeviceToken()
-
+    console.log(_private)
     _request.post(
       {
         uri: _apiUrl + _endpoints.login,
@@ -229,10 +255,11 @@ function Robinhood(opts, callback) {
         if (err) {
           throw err;
         }
-        if(httpResponse.body.detail == "Request blocked, challenge issued."){
+        if(body.detail == "Request blocked, challenge issued."){
           _collect2fa()
           .then(user_input => {
-            _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id            
+            _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id    
+            _private.challenge_id = body.challenge.id        
              return _respond2faChallenge(parseInt(user_input), body.challenge.id)
           }).then((body) => {
             // 2fa Challenge
@@ -246,7 +273,11 @@ function Robinhood(opts, callback) {
           })
           .then(body => {
             _build_auth_header(_private.access_token);
-  
+            // Cache device_token 
+            if(process.env.SHOULD_CACHE_CREDENTIALS){
+              _cacheCredentials()
+            }
+          
             _setHeaders();
             
             // Set account
@@ -258,14 +289,24 @@ function Robinhood(opts, callback) {
                 throw err;
               });
           })
-        }else{
-          if(body.mfa_required == true && body.mfa_type == 'sms') {
-            throw new Error('You must disable 2FA on your account for this to work.')
-          } else{
-            if (!body.access_token) {
-              throw new Error('token not found ' + JSON.stringify(httpResponse));
-            }
-          }
+        }else if(body.mfa_required == true && body.mfa_type == 'sms') {
+          throw new Error('You must disable 2FA on your account for this to work.')
+        } else if (!body.access_token) {
+          console.log(body)
+          throw new Error('token not found ' + JSON.stringify(httpResponse));
+        } else{
+
+          _private.access_token = body.access_token
+          _private.refresh_token = body.refresh_token
+          _setHeaders();
+          // Set account
+          _set_account()
+            .then(function () {
+              callback.call();
+            })
+            .catch(function (err) {
+              throw err;
+            });
         }
       }
     );
@@ -288,6 +329,42 @@ function Robinhood(opts, callback) {
         resolve();
       });
     });
+  }
+
+  function _deviceTokenIsCached() {
+    const path = 'device_token.txt'
+    try {
+      return fs.existsSync(path)
+    } catch(err) {
+      console.error(err)
+    }
+  }
+
+  function _readCachedDeviceToken() {
+    return new Promise((resolve, reject) => { 
+      fs.readFile("device_token.txt", "utf-8", (err, data) => {
+        if (err){
+          reject(err)
+          throw err
+        }else{
+          resolve(JSON.parse(data.toString()))
+        }
+      });    
+    })
+  }
+
+  function _cacheCredentials() {
+    var data = `{ "device_token": "${_private.device_token}", "access_token": "${_private.access_token}", "refresh_token": "${_private.refresh_token}", "challenge_id": "${_private.challenge_id}"}`;
+    return new Promise((resolve, reject) => {
+      fs.writeFile("device_token.txt", data, (err) => {
+        if (err) {
+          reject(err)
+          throw err
+        }else{
+          resolve({status: "success"})
+        }
+      });
+    })
   }
 
   function _collect2fa() {
