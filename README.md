@@ -62,6 +62,68 @@ setTimeout(function(){
 }, 5000);
 
 ```
+## Working 2FA Example
+
+```bash
+node examples/observable_quotes.js 
+Enter the 2FA code that was sent to you via sms.
+123456
+[
+  {
+    ask_price: '20.140000',
+    ask_size: 100,
+    bid_price: '20.130000',
+    bid_size: 9300,
+    last_trade_price: '20.140000',
+    last_extended_hours_trade_price: '20.240000',
+    previous_close: '20.450000',
+    adjusted_previous_close: '20.450000',
+    previous_close_date: '2019-06-17',
+    symbol: 'TVIX',
+    trading_halted: false,
+    has_traded: true,
+    last_trade_price_source: 'consolidated',
+    updated_at: '2019-06-18T23:59:12Z',
+    instrument: 'https://api.robinhood.com/instruments/c9334c71-c95d-4da0-b6c2-13a01f306c50/'
+  },
+  {
+    ask_price: '198.560000',
+    ask_size: 100,
+    bid_price: '198.400000',
+    bid_size: 200,
+    last_trade_price: '198.450000',
+    last_extended_hours_trade_price: '199.300000',
+    previous_close: '193.890000',
+    adjusted_previous_close: '193.890000',
+    previous_close_date: '2019-06-17',
+    symbol: 'AAPL',
+    trading_halted: false,
+    has_traded: true,
+    last_trade_price_source: 'consolidated',
+    updated_at: '2019-06-18T23:59:32Z',
+    instrument: 'https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/'
+  },
+  {
+    ask_price: '1105.070000',
+    ask_size: 500,
+    bid_price: '1103.430000',
+    bid_size: 100,
+    last_trade_price: '1103.600000',
+    last_extended_hours_trade_price: '1103.600000',
+    previous_close: '1092.500000',
+    adjusted_previous_close: '1092.500000',
+    previous_close_date: '2019-06-17',
+    symbol: 'GOOG',
+    trading_halted: false,
+    has_traded: true,
+    last_trade_price_source: 'consolidated',
+    updated_at: '2019-06-18T20:23:51Z',
+    instrument: 'https://api.robinhood.com/instruments/943c5009-a0bb-4665-8cf4-a95dab5874e4/'
+  }
+]
+20.140000
+
+```
 
 ## Real World Example
 
@@ -179,7 +241,7 @@ setTimeout(function(){
 
 
 ```bash
- SHOULD_CACHE_CREDENTIALS=true node examples/observable_quotes.js 
+ SHOULD_CACHE_CREDENTIALS=true node examples/observable_quotes_example.js 
 ```
 
 ## Observables
