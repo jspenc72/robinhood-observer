@@ -73,10 +73,7 @@ setTimeout(function(){
 
 var credentials = {
     username: '',
-    password: '',
-    device_token: ''                // Temporary Device Token Retrieved from Robinhood, 
-                                    // Required as of June 2019 
-                                    // This can be retrieved from the body of the /token request on successful sign in   
+    password: '' 
 };
 
 var Robinhood = require('robinhood-observer')     //Robinhood has not authenticated but can still be used for the unauthenticated subset of the API

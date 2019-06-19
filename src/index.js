@@ -68,12 +68,13 @@ function Robinhood(opts, callback) {
     _request = request.defaults(),
     _rp = rp.defaults(),
     _private = {
-      session : {},
+      session: {},
       account: null,
-      username : null,
-      password : null,
-      headers : null,
-      auth_token : null
+      username: null,
+      password: null,
+      headers: null,
+      auth_token: null,
+      device_token: null
     },
     api = {};
 
@@ -81,7 +82,6 @@ function Robinhood(opts, callback) {
     _private.username = _.has(_options, 'username') ? _options.username : null;
     _private.password = _.has(_options, 'password') ? _options.password : null;
     _private.auth_token = _.has(_options, 'token') ? _options.token : null;
-    _private.device_token = _.has(_options, 'device_token') ? _options.device_token : null;
     _private.headers = {
       'Host': 'api.robinhood.com',
       'Accept': '*/*',
@@ -93,7 +93,6 @@ function Robinhood(opts, callback) {
     _setHeaders();
     if (!_private.auth_token) {
       _login(function (data) {
-        
         _isInit = true;
 
         if (callback) {
@@ -131,7 +130,89 @@ function Robinhood(opts, callback) {
     });
   }
 
+  function _respond2faChallenge(user_input, device_id) {
+    return new Promise((resolve, reject) => {
+      _request.post(
+        {
+          uri: _apiUrl + "challenge/"+ device_id+ "/respond/",
+          form: { "response" : user_input }
+        },
+        function (err, httpResponse, body) {
+          if (err) {
+            reject(err)
+            throw err;
+          }else{
+            console.log('_respond2faChallenge', body)
+            resolve(body)
+          }
+        })
+    });
+
+    // Should probably validate format of the sms token
+
+  }
+
+  function _generateDeviceToken() {
+    const rands = [];
+    for (let i = 0; i < 16; i++) {
+      const r = Math.random();
+      const rand = 4294967296.0 * r;
+      rands.push(
+        (rand >> ((3 & i) << 3)) & 255
+      );
+    }
+  
+    let id = '';
+    const hex = [];
+    for (let i = 0; i < 256; ++i) {
+      hex.push(Number(i + 256).toString(16).substring(1));
+    }
+  
+    for (let i = 0; i < 16; i++) {
+      id += hex[rands[i]];
+      if (i == 3 || i == 5 || i == 7 || i == 9) {
+        id += "-";
+      }
+    }
+  
+    return id;
+  }
+
+
+  function _requestBearerToken() {
+    return new Promise(function (resolve, reject) {
+      _request.post(
+        {
+          uri: _apiUrl + _endpoints.login,
+          form: {
+            grant_type: 'password',
+            scope: 'internal',
+            client_id: _clientId,
+            expires_in: 86400,
+            device_token: _private.device_token,
+            password: _private.password,
+            username: _private.username,
+            challenge_type: 'sms'
+          }
+        },
+        function (err, httpResponse, body) {
+          if (err) {
+            reject(err)
+            throw err;
+          }else{
+            resolve(body)
+          }
+          console.log('_requestBearerToken', body)
+          _private.access_token = body.access_token
+          _private.refresh_token = body.refresh_token
+        })    
+    })
+
+  }
+
   function _login(callback) {
+    _private.device_token =  _generateDeviceToken()
+
     _request.post(
       {
         uri: _apiUrl + _endpoints.login,
@@ -142,31 +223,50 @@ function Robinhood(opts, callback) {
           expires_in: 86400,
           device_token: _private.device_token,
           password: _private.password,
-          username: _private.username
+          username: _private.username,
+          challenge_type: 'sms'
         }
       },
       function (err, httpResponse, body) {
         if (err) {
           throw err;
         }
+        console.log('_login', body)
 
-        if (!body.access_token) {
-          throw new Error('token not found ' + JSON.stringify(httpResponse));
-        }
-        _private.auth_token = body.access_token;
-        _private.refresh_token = body.refresh_token;
-        _build_auth_header(_private.auth_token);
+        if(httpResponse.body.detail == "Request blocked, challenge issued."){
+          _collect2fa()
+          .then(user_input => {
+            _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id            
+             return _respond2faChallenge(parseInt(user_input), body.challenge.id)
+          }).then((body) => {
+            // 2fa Challenge
+            console.log('after _respond2faChallenge', body)
 
-        _setHeaders();
-
-        // Set account
-        _set_account()
-          .then(function () {
-            callback.call();
+            return _requestBearerToken()
           })
-          .catch(function (err) {
-            throw err;
-          });
+          .then(body => {
+            _build_auth_header(_private.access_token);
+  
+            _setHeaders();
+            
+            // Set account
+            _set_account()
+              .then(function () {
+                callback.call();
+              })
+              .catch(function (err) {
+                throw err;
+              });
+          })
+        }else{
+          if(body.mfa_required == true && body.mfa_type == 'sms') {
+            throw new Error('You must disable 2FA on your account for this to work.')
+          } else{
+            if (!body.access_token) {
+              throw new Error('token not found ' + JSON.stringify(httpResponse));
+            }
+          }
+        }
       }
     );
   }
@@ -177,7 +277,7 @@ function Robinhood(opts, callback) {
         if (err) {
           reject(err);
         }
-        console.log('_set_account', body)
+        console.log('_set_account', body, _private.headers)
         // Being defensive when user credentials are valid but RH has not approved an account yet
         if (
           body.results &&
@@ -189,6 +289,29 @@ function Robinhood(opts, callback) {
         resolve();
       });
     });
+  }
+
+  function _collect2fa() {
+
+    // Get process.stdin as the standard input object.
+
+    // Set input character encoding.
+    process.stdin.setEncoding('utf-8');
+
+    // Prompt user to input data in console.
+    console.log("Please input text in command line.");
+
+    return new Promise((resolve, reject) => {
+      // When user input data and click enter key.
+      process.stdin.on('data', function (data) {
+        if(data){
+          resolve(data)          
+        }else{
+          reject(null)
+        }
+        // User input exit.
+      });
+    })
   }
 
   function _build_auth_header(token) {
