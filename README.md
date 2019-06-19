@@ -35,37 +35,37 @@ $ npm install robinhood-observer --save
 ## Example Starter Project
 The [example project](https://github.com/jspenc72/robinhood-observer-starter) helps you get started right off the bat and demonstrates some of the cool things you can do with this library.
 
-
-## Basic Usage Example
-1.  Monitor AAPL stocks WITHOUT using authentication
-2.  Trigger if the price changes.
-```js
-
-var Robinhood = require('robinhood-observer')     //Robinhood has not authenticated but can still be used for the unauthenticated subset of the API
-var observer = Robinhood(null).observeQuote(['AAPL'])   //Do not authenticate
-
-var buySubscription = observer
-                    .map(quote => quote.results)
-                    .distinct()                   //Only use distict results...
-                    .subscribe(x => {
-                        //This block of code is executed only when the price has changed.
-                        console.log(x);
-
-                    }, e => {
-                        console.error(e)
-                    }, () => console.log('buy subscription disposed'));
-
-//Unsubscribe to updates after 5 seconds.
-
-setTimeout(function(){
- subscription.dispose();
-}, 5000);
-
-```
 ## Working 2FA Example
 
 ```bash
-node examples/observable_quotes.js 
+var credentials = {
+    username: '',
+    password: '',
+};
+
+var Robinhood = require('../src')(credentials, function(){
+    var subscription = Robinhood.observeQuote(['TVIX', 'AAPL', 'GOOG'])
+    .map(quote => quote.results)
+    .distinct()                         //Only use distict results...
+    .subscribe(x => {
+      //Do something each time the price changes
+      console.log(x);
+      console.log(x[0].last_trade_price);
+    }, e => {
+      console.error(e)
+    }, () => console.log('disposed'));
+    setTimeout(function(){
+      //Unsubscribe to updates for the data after 10 minutes
+      subscription.dispose();
+    }, 60000*10);
+});
+
+```
+
+
+
+```bash
+node examples/observable_quotes_example.js 
 Enter the 2FA code that was sent to you via sms.
 123456
 [
