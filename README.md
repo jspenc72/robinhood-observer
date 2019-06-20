@@ -43,7 +43,7 @@ var credentials = {
     password: '',
 };
 
-var Robinhood = require('../src')(credentials, function(){
+var Robinhood = require('robinhood-observer')(credentials, function(){
     var subscription = Robinhood.observeQuote(['TVIX', 'AAPL', 'GOOG'])
     .map(quote => quote.results)
     .distinct()                         //Only use distict results...
