@@ -80,9 +80,9 @@ function Robinhood(opts, callback) {
     api = {};
 
   function _init(){
-    _private.username = _.has(_options, 'username') ? _options.username : null;
-    _private.password = _.has(_options, 'password') ? _options.password : null;
-    _private.auth_token = _.has(_options, 'token') ? _options.token : null;
+    _private.username = _.has(_options, 'username') ? _options.username : (process.env.ROBINHOOD_USERNAME ? process.env.ROBINHOOD_USERNAME : null);
+    _private.password = _.has(_options, 'password') ? _options.password : (process.env.ROBINHOOD_PASSWORD ? process.env.ROBINHOOD_PASSWORD : null);
+    _private.auth_token = _.has(_options, 'token') ? _options.token : (process.env.ROBINHOOD_TOKEN ? process.env.ROBINHOOD_TOKEN : null);
     _private.headers = {
       'Host': 'api.robinhood.com',
       'Accept': '*/*',
