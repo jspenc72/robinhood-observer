@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Unofficial Wrapper for Robinhood Free Stock Trading ",
   "main": "src/index.js",
   "scripts": {
@@ -16,7 +16,11 @@
     "robinhood",
     "bluebird",
     "rxjs",
-    "rx"
+    "rx",
+    "day-trading",
+    "stock",
+    "nyse",
+    "nasdaq"
   ],
   "author": "jspenc72",
   "license": "ISC",
