@@ -1,12 +1,15 @@
+// import device from "./device.mjs"
 var RxJS = require('rxjs'),
     Rx = require('rx'),
     Promise = require("bluebird"),
-    request = require('request'),
-    rp = require('request-promise'),
-    _ = require("lodash");
-    fs = require("fs");
-
-'use strict';
+    _ = require("lodash"),
+    fs = require("fs"),
+    Device = require("./device.js"),
+    auth = require("./auth.js"),
+    endpoints = require("./endpoints"),
+    headers = require("./headers")
+  
+    'use strict';
 
 /**
  * [Robinhood description]
@@ -14,60 +17,18 @@ var RxJS = require('rxjs'),
  * @param {Function} callback [description]
  */
 function Robinhood(opts, callback) {
+  var api = { test: "value"};
   /* +--------------------------------+ *
    * |      Internal variables        | *
    * +--------------------------------+ */
   var _apiUrl = 'https://api.robinhood.com/';
-
+  var device = new Device()
   var _options = opts || {},
-      // Private API Endpoints
-      _endpoints = {
-        login: 'oauth2/token/',
-        logout: 'oauth2/revoke_token/',
-        investment_profile: 'user/investment_profile/',
-        accounts: 'accounts/',
-        ach_iav_auth: 'ach/iav/auth/',
-        ach_relationships: 'ach/relationships/',
-        ach_transfers: 'ach/transfers/',
-        ach_deposit_schedules: 'ach/deposit_schedules/',
-        applications: 'applications/',
-        dividends: 'dividends/',
-        edocuments: 'documents/',
-        earnings: 'marketdata/earnings/',
-        instruments: 'instruments/',
-        margin_upgrade: 'margin/upgrades/',
-        markets: 'markets/',
-        notifications: 'notifications/',
-        notifications_devices: 'notifications/devices/',
-        orders: 'orders/',
-        cancel_order: 'orders/', //API expects https://api.robinhood.com/orders/{{orderId}}/cancel/
-        password_reset: 'password_reset/request/',
-        quotes: 'quotes/',
-        document_requests: 'upload/document_requests/',
-        user: 'user/',
-
-        user_additional_info: "user/additional_info/",
-        user_basic_info: "user/basic_info/",
-        user_employment: "user/employment/",
-        user_investment_profile: "user/investment_profile/",
-
-        options_chains: 'options/chains/',
-        options_positions: 'options/aggregate_positions/',
-        options_instruments: 'options/instruments/',
-        options_marketdata: 'marketdata/options/',
-
-        watchlists: 'watchlists/',
-        positions: 'positions/',
-        fundamentals: 'fundamentals/',
-        sp500_up: 'midlands/movers/sp500/?direction=up',
-        sp500_down: 'midlands/movers/sp500/?direction=down',
-        news: 'midlands/news/',
-        tag: 'midlands/tags/tag/'
-    },
+      // Private API Endpointsf
     _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
     _isInit = false,
-    _request = request.defaults(),
-    _rp = rp.defaults(),
+    _request = auth._request.defaults(),
+    _rp = auth._rp.defaults(),
     _private = {
       session: {},
       account: null,
@@ -76,237 +37,87 @@ function Robinhood(opts, callback) {
       headers: null,
       auth_token: null,
       device_token: null
-    },
-    api = {};
+    }
 
   function _init(){
     _private.username = _.has(_options, 'username') ? _options.username : (process.env.ROBINHOOD_USERNAME ? process.env.ROBINHOOD_USERNAME : null);
     _private.password = _.has(_options, 'password') ? _options.password : (process.env.ROBINHOOD_PASSWORD ? process.env.ROBINHOOD_PASSWORD : null);
     _private.auth_token = _.has(_options, 'token') ? _options.token : (process.env.ROBINHOOD_TOKEN ? process.env.ROBINHOOD_TOKEN : null);
-    _private.headers = {
-      'Host': 'api.robinhood.com',
-      'Accept': '*/*',
-      'Accept-Language': 'en-us',
-      'Accept-Encoding': 'gzip, deflate',
-      'Referer': 'https://robinhood.com/',
-      'Origin': 'https://robinhood.com',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15',
-      'X-Robinhood-API-Version': '1.275.0'
-    };
-    _setHeaders();
+    auth.setHeaders(headers);
     if (!_private.auth_token) {
       // Check if cached
-      if(_deviceTokenIsCached()){
-        _readCachedDeviceToken()
-        .then(contents => {
-          _private.device_token = contents.device_token
-          _private.access_token = contents.access_token
-          _private.refresh_token = contents.refresh_token
-          _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = contents.challenge_id
-          _login(function (data) {
-            _isInit = true;
-    
-            if (callback) {
-              if (data) {
-                callback(data);
-              } else {
-                callback.call();
-              }
-            }
+      if(device.registered){
+        // Load device ID and authenticate?
+        console.log("device already registered")
+        headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
+        _build_auth_header(device.access_token);        
+        _setHeaders();
+        // Set account
+        _set_account()
+          .then(() => {
+            callback.call();
+          })
+          .catch((err) => {
+            throw err;
           });          
-        })
-
       }else{
-        _private.device_token =  _generateDeviceToken()
-        _login(function (data) {
-          _isInit = true;
-  
-          if (callback) {
-            if (data) {
-              callback(data);
-            } else {
-              callback.call();
-            }
-          }
-        });
-      }
-    } else {
-      _build_auth_header(_private.auth_token);
-      _setHeaders();
-      _set_account()
-        .then(function () {
-          callback.call();
+        // 1. Register Device
+        console.log("Registering Device")
+        auth.registerTokenWith(device, _private.username, _private.password)
+        .then((body) => {
+          return auth.collect2fa()
+          .then(user_input => {
+            headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
+            return auth.respond2faChallenge(user_input, body.challenge.id)
+          })
         })
-        .catch(function (err) {
-          throw err;
-        });
+        .then((body) => {
+            // Check if 2fa succeeded
+            if(body.status == "validated"){
+              // Device is now registered.
+
+              return auth.requestBearerToken(device, _private.username, _private.password)
+            }else if (body.detail == "Challenge response is invalid."){
+              console.log("The 2FA code you entered was incorrect.")
+              process.exit(1)
+            }else{
+              console.log("UNKNOWN CONDITIION")
+            }
+        })
+        .then((body)=> {
+          console.log(body)
+          device.updateTokens(body)
+          _build_auth_header(device.access_token);        
+          _setHeaders();
+          
+          // Set account
+          _set_account()
+            .then(() => {
+              callback.call();
+            })
+            .catch((err) => {
+              throw err;
+            });          
+        })
+        .catch(err => {
+          console.error(err)
+        })
+      }
     }
   }
 
   function _setHeaders(){
-    _request = request.defaults({
-      headers: _private.headers,
+    _request = auth._request.defaults({
+      headers: headers,
       json: true,
       gzip: true
     });
 
-    _rp = rp.defaults({
-      headers: _private.headers,
+    _rp = auth._rp.defaults({
+      headers: headers,
       json: true,
       gzip: true
     });
-  }
-
-  function _respond2faChallenge(user_input, device_id) {
-    return new Promise((resolve, reject) => {
-      _request.post(
-        {
-          uri: _apiUrl + "challenge/"+ device_id+ "/respond/",
-          form: { "response" : user_input }
-        },
-        function (err, httpResponse, body) {
-          if (err) {
-            reject(err)
-            throw err;
-          }else{
-            resolve(body)
-          }
-        })
-    });
-
-    // Should probably validate format of the sms token
-
-  }
-
-  function _generateDeviceToken() {
-    const rands = [];
-    for (let i = 0; i < 16; i++) {
-      const r = Math.random();
-      const rand = 4294967296.0 * r;
-      rands.push(
-        (rand >> ((3 & i) << 3)) & 255
-      );
-    }
-  
-    let id = '';
-    const hex = [];
-    for (let i = 0; i < 256; ++i) {
-      hex.push(Number(i + 256).toString(16).substring(1));
-    }
-  
-    for (let i = 0; i < 16; i++) {
-      id += hex[rands[i]];
-      if (i == 3 || i == 5 || i == 7 || i == 9) {
-        id += "-";
-      }
-    }
-  
-    return id;
-  }
-
-
-  function _requestBearerToken() {
-    return new Promise(function (resolve, reject) {
-      _request.post(
-        {
-          uri: _apiUrl + _endpoints.login,
-          form: {
-            grant_type: 'password',
-            scope: 'internal',
-            client_id: _clientId,
-            expires_in: 86400,
-            device_token: _private.device_token,
-            password: _private.password,
-            username: _private.username,
-            challenge_type: 'sms'
-          }
-        },
-        function (err, httpResponse, body) {
-          if (err) {
-            reject(err)
-            throw err;
-          }else{
-            resolve(body)
-          }
-          _private.access_token = body.access_token
-          _private.refresh_token = body.refresh_token
-        })    
-    })
-  }
-
-  function _login(callback) {
-    _request.post(
-      {
-        uri: _apiUrl + _endpoints.login,
-        form: {
-          grant_type: 'password',
-          scope: 'internal',
-          client_id: _clientId,
-          expires_in: 86400,
-          device_token: _private.device_token,
-          password: _private.password,
-          username: _private.username,
-          challenge_type: 'sms'
-        }
-      },
-      function (err, httpResponse, body) {
-        if (err) {
-          throw err;
-        }
-        if(body.detail == "Request blocked, challenge issued."){
-          _collect2fa()
-          .then(user_input => {
-            _private.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id    
-            _private.challenge_id = body.challenge.id        
-             return _respond2faChallenge(parseInt(user_input), body.challenge.id)
-          }).then((body) => {
-            // 2fa Challenge
-            // Check if 2fa succeeded
-            if (body.detail == "Challenge response is invalid."){
-              console.log("The 2FA code you entered was incorrect.")
-              process.exit(1)
-            }else{
-              return _requestBearerToken()
-            }
-          })
-          .then(body => {
-            _build_auth_header(_private.access_token);
-            // Cache device_token 
-            if(process.env.SHOULD_CACHE_CREDENTIALS){
-              _cacheCredentials()
-            }
-          
-            _setHeaders();
-            
-            // Set account
-            _set_account()
-              .then(function () {
-                callback.call();
-              })
-              .catch(function (err) {
-                throw err;
-              });
-          })
-        }else if(body.mfa_required == true && body.mfa_type == 'sms') {
-          throw new Error('You must disable 2FA on your account for this to work.')
-        } else if (!body.access_token) {
-          throw new Error('token not found ' + JSON.stringify(httpResponse));
-        } else{
-
-          _private.access_token = body.access_token
-          _private.refresh_token = body.refresh_token
-          _setHeaders();
-          // Set account
-          _set_account()
-            .then(function () {
-              callback.call();
-            })
-            .catch(function (err) {
-              throw err;
-            });
-        }
-      }
-    );
   }
 
   function _set_account() {
@@ -328,66 +139,8 @@ function Robinhood(opts, callback) {
     });
   }
 
-  function _deviceTokenIsCached() {
-    const path = 'device_token.txt'
-    try {
-      return fs.existsSync(path)
-    } catch(err) {
-      console.error(err)
-    }
-  }
-
-  function _readCachedDeviceToken() {
-    return new Promise((resolve, reject) => { 
-      fs.readFile("device_token.txt", "utf-8", (err, data) => {
-        if (err){
-          reject(err)
-          throw err
-        }else{
-          resolve(JSON.parse(data.toString()))
-        }
-      });    
-    })
-  }
-
-  function _cacheCredentials() {
-    var data = `{ "device_token": "${_private.device_token}", "access_token": "${_private.access_token}", "refresh_token": "${_private.refresh_token}", "challenge_id": "${_private.challenge_id}"}`;
-    return new Promise((resolve, reject) => {
-      fs.writeFile("device_token.txt", data, (err) => {
-        if (err) {
-          reject(err)
-          throw err
-        }else{
-          resolve({status: "success"})
-        }
-      });
-    })
-  }
-
-  function _collect2fa() {
-
-    // Get process.stdin as the standard input object.
-
-    // Set input character encoding.
-    process.stdin.setEncoding('utf-8');
-
-    // Prompt user to input data in console.
-    console.log("Enter the 2FA code that was sent to you via sms.");
-    return new Promise((resolve, reject) => {
-      // When user input data and click enter key.
-      process.stdin.on('data', function (data) {
-        if(data){
-          resolve(data)          
-        }else{
-          reject(null)
-        }
-        // User input exit.
-      });
-    })
-  }
-
   function _build_auth_header(token) {
-    _private.headers.Authorization = 'Bearer ' + token;
+    headers.Authorization = 'Bearer ' + token;
   }
 
   function options_from_chain({ next, results }) {
@@ -434,7 +187,7 @@ function Robinhood(opts, callback) {
             {
               uri:
                 _apiUrl +
-                _endpoints.options_marketdata +
+                endpoints.options_marketdata +
                 '?instruments=' +
                 option_urls.join('%2C')
             },
@@ -483,7 +236,7 @@ function Robinhood(opts, callback) {
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
        _rp.get({
-             uri: _apiUrl + _endpoints.quotes,
+             uri: _apiUrl + endpoints.quotes,
              qs: { 'symbols': symbol.toUpperCase() }
            })
            .then(success => {
@@ -507,7 +260,7 @@ function Robinhood(opts, callback) {
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
        _rp.get({
-             uri: _apiUrl + _endpoints.orders
+             uri: _apiUrl + endpoints.orders
            })
            .then(success => {
              observer.onNext(success);
@@ -536,7 +289,7 @@ function Robinhood(opts, callback) {
    // this package to get a new token!
    api.expire_token = function(callback) {
      return _request.post({
-       uri: _apiUrl + _endpoints.logout
+       uri: _apiUrl + endpoints.logout
      }, callback);
    };
 
@@ -546,7 +299,7 @@ function Robinhood(opts, callback) {
    * @return {Function or Promise}            [description]
    */
   api.investment_profile = function(callback){
-    var tUri = _apiUrl + _endpoints.investment_profile;
+    var tUri = _apiUrl + endpoints.investment_profile;
     var tOpts = {
         uri: tUri
       };
@@ -566,7 +319,7 @@ function Robinhood(opts, callback) {
   api.fundamentals = function(symbol, callback){
     symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
 
-    var tUri = _apiUrl + _endpoints.fundamentals;
+    var tUri = _apiUrl + endpoints.fundamentals;
     var tOpts = {
         uri: tUri,
         qs: { 'symbols': symbol }
@@ -586,7 +339,7 @@ function Robinhood(opts, callback) {
   api.instruments = function(symbol, callback){
     symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
 
-    var tUri = _apiUrl + _endpoints.instruments;
+    var tUri = _apiUrl + endpoints.instruments;
     var tOpts = {
         uri: tUri,
         qs: {'symbols': symbol.toUpperCase()}
@@ -614,12 +367,12 @@ function Robinhood(opts, callback) {
     if (callback && typeof callback == "function") {
       // do something
       return _request.get({
-          uri: _apiUrl + _endpoints.quotes,
+          uri: _apiUrl + endpoints.quotes,
           qs: { 'symbols': symbol.toUpperCase() }
         }, callback);
     }else{
       return _rp.get({
-          uri: _apiUrl + _endpoints.quotes,
+          uri: _apiUrl + endpoints.quotes,
           qs: { 'symbols': symbol.toUpperCase() }
         });
     }
@@ -636,7 +389,7 @@ function Robinhood(opts, callback) {
   api.accounts = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.accounts
+      uri: _apiUrl + endpoints.accounts
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -650,13 +403,13 @@ function Robinhood(opts, callback) {
    * @return {[Function or Promise]}            [description]
    */
   api.user = function(callback){
-    var tUri = _apiUrl + _endpoints.user,
+    var tUri = _apiUrl + endpoints.user,
         tOpts = {
       uri: tUri
     };
     if (callback && typeof callback == "function") {
       return _request.get({
-        uri: _apiUrl + _endpoints.user
+        uri: _apiUrl + endpoints.user
       }, callback);
     }else{
       return _rp.get(tOpts);
@@ -671,7 +424,7 @@ function Robinhood(opts, callback) {
   api.userBasicInfo = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.user_basic_info
+      uri: _apiUrl + endpoints.user_basic_info
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -687,7 +440,7 @@ function Robinhood(opts, callback) {
   api.userAdditionalInfo = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.user_additional_info
+      uri: _apiUrl + endpoints.user_additional_info
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -704,7 +457,7 @@ function Robinhood(opts, callback) {
   api.userEmployment = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.additional_info
+      uri: _apiUrl + endpoints.additional_info
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -722,7 +475,7 @@ function Robinhood(opts, callback) {
   api.userInvestmentProfile = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + _endpoints.investment_profile
+      uri: _apiUrl + endpoints.investment_profile
     };
     if (callback && typeof callback == "function") {
       return _request.get(tOpts, callback);
@@ -738,7 +491,7 @@ function Robinhood(opts, callback) {
    * @return {[Function or Promise]}            [description]
    */
   api.dividends = function(callback){
-    var tUri = _apiUrl + _endpoints.dividends,
+    var tUri = _apiUrl + endpoints.dividends,
         tOpts = {
         uri: tUri
       };
@@ -754,7 +507,7 @@ function Robinhood(opts, callback) {
    * @return {[Function or Promise]}            [description]
    */
   api.orders = function(callback){
-    var tUri = _apiUrl + _endpoints.orders,
+    var tUri = _apiUrl + endpoints.orders,
         tOpts = {
         uri: tUri
       };
@@ -817,7 +570,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   var _place_order = function(options, callback){
-    var tUri = _apiUrl + _endpoints.orders;
+    var tUri = _apiUrl + endpoints.orders;
     //Get instrument url
 
 
@@ -951,7 +704,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.positions = function(callback){
-    var tUri = _apiUrl + _endpoints.positions,
+    var tUri = _apiUrl + endpoints.positions,
         tOpts = {
         uri: tUri
       };
@@ -968,7 +721,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.news = function(symbol, callback){
-    var tUri = _apiUrl + [_endpoints.news,'/'].join(symbol),
+    var tUri = _apiUrl + [endpoints.news,'/'].join(symbol),
         tOpts = {
         uri: tUri
       };
@@ -984,7 +737,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.markets = function(callback){
-    var tUri = _apiUrl + _endpoints.markets,
+    var tUri = _apiUrl + endpoints.markets,
         tOpts = {
       uri: tUri
     };
@@ -1000,7 +753,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.sp500_up = function(callback){
-    var tUri = _apiUrl + _endpoints.sp500_up,
+    var tUri = _apiUrl + endpoints.sp500_up,
         tOpts = {
       uri: tUri
     };
@@ -1016,7 +769,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.sp500_down = function(callback){
-    var tUri = _apiUrl + _endpoints.sp500_down,
+    var tUri = _apiUrl + endpoints.sp500_down,
         tOpts = {
         uri: tUri
       };
@@ -1033,7 +786,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.create_watch_list = function(name, callback){
-    var tUri = _apiUrl + _endpoints.watchlists;
+    var tUri = _apiUrl + endpoints.watchlists;
     var tOpts = {
       uri: tUri,
       form: {
@@ -1052,7 +805,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}            [description]
    */
   api.watchlists = function(callback){
-    var tUri = _apiUrl + _endpoints.watchlists,
+    var tUri = _apiUrl + endpoints.watchlists,
         tOpts = {
       uri: tUri
     };
@@ -1069,7 +822,7 @@ function Robinhood(opts, callback) {
    * @return {[type]}              [description]
    */
   api.splits = function(instrument, callback){
-    var tUri = _apiUrl + [_endpoints.instruments,'/splits/'].join(instrument),
+    var tUri = _apiUrl + [endpoints.instruments,'/splits/'].join(instrument),
         tOpts = {
       uri: tUri
     };
@@ -1093,7 +846,7 @@ function Robinhood(opts, callback) {
       // callback(new Error("You must provide a symbol, interval and timespan"));
       return;
     }
-    var tUri = _apiUrl + [_endpoints.quotes + 'historicals/','/?interval='+intv+'&span='+span].join(symbol),
+    var tUri = _apiUrl + [endpoints.quotes + 'historicals/','/?interval='+intv+'&span='+span].join(symbol),
         tOpts = {
         uri: tUri
       };
@@ -1119,6 +872,10 @@ function Robinhood(opts, callback) {
       return _rp.get(tOpts);
     }
   };
+  api.init = _init
+  api.device  = Device
+  api.auth = auth
+  api.endpoints = endpoints
   _init(_options);
   return api;
 }

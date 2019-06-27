@@ -239,9 +239,8 @@ setTimeout(function(){
 ```
 ### Caching device_token
 
-
 ```bash
- SHOULD_CACHE_CREDENTIALS=true node examples/observable_quotes_example.js 
+
 ```
 
 ## Observables

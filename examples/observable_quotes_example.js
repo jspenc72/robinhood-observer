@@ -11,7 +11,6 @@ if (process.env.ROBINHOOD_USERNAME) {
   };
 }
 
-
 var Robinhood = require('../src')(credentials, function(){
     var subscription = Robinhood.observeQuote(['TVIX', 'AAPL', 'GOOG'])
     .map(quote => quote.results)
