@@ -64,7 +64,9 @@ function registerTokenWith(device, username, password) {
           resolve(body)
         }else if(body.mfa_required == true && body.mfa_type == 'sms') {
           reject(new Error('You must disable 2FA on your account for this to work.'))
-        } else if (!body.access_token) {
+        } else if(body.detail == "Unable to log in with provided credentials.") {
+          reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
+        }else if (!body.access_token) {
           reject(new Error('token not found ' + JSON.stringify(httpResponse)));
         } else{
           reject(new Error('token found ' + JSON.stringify(httpResponse)));          
