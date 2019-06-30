@@ -13,7 +13,7 @@ class Device {
   refresh_token = "";
   challenge = {};
   registered = false;
-  path = 'device.json';
+  path = (process.env.ROBINHOOD_DEVICE_PATH ? process.env.ROBINHOOD_DEVICE_PATH : 'device.json');
 	constructor(path) {
     path ? this.path = path : null
     if(this.isCached()){

@@ -32,6 +32,14 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 $ npm install robinhood-observer --save
 ```
 
+## Environment Variables
+
+| Key | Value | Description  |
+|---|---|---|
+| ROBINHOOD_USERNAME  | ''  | Your robinhood Username  |
+| ROBINHOOD_PASSWORD  | ''  | Your robinhood Password  |
+| ROBINHOOD_DEVICE_PATH  | device.json  | Path to store the unique identifier for your 2FA device. |
+
 ## Example Starter Project
 The [example project](https://github.com/jspenc72/robinhood-observer-starter) helps you get started right off the bat and demonstrates some of the cool things you can do with this library.
 
