@@ -17,7 +17,7 @@ var RxJS = require('rxjs'),
  * @param {Function} callback [description]
  */
 function Robinhood(opts, callback) {
-  var api = { test: "value"};
+  var api = { test: "value", crypto: {}};
   /* +--------------------------------+ *
    * |      Internal variables        | *
    * +--------------------------------+ */
@@ -349,6 +349,70 @@ function Robinhood(opts, callback) {
     }else{
       return _rp.get(tOpts);
     }
+  };
+
+  /**
+   * [currency description]
+   * @param  [String]   symbol   [description]
+   * @param  {Function} callback [description]
+   * @return {[Function or Promise]}            [description]
+   */
+
+  api.crypto_quote = function(symbol, callback){
+    var tUri = _apiUrl + endpoints.marketdata_forex_quotes,
+        tOpts = {
+        uri: tUri
+      };
+
+    symbol = Array.isArray(symbol) ? symbol : [symbol];
+    filtered = _.filter(api.crypto.pairs, function(o) {
+      return (symbol.indexOf(o.symbol) > -1) || (symbol.indexOf(o.symbol.split('-')[0]) > -1)
+    })
+    targets = _.map(filtered, item => {
+      return item.id
+    }).join(',')
+    
+    if (callback && typeof callback == "function") {
+      // do something
+      return _request.get({
+          uri: _apiUrl + endpoints.marketdata_forex_quotes,
+          qs: { 'ids': targets }
+        }, callback);
+    }else{
+      return _rp.get({
+          uri: _apiUrl + endpoints.marketdata_forex_quotes,
+          qs: { 'ids': targets }
+        });
+    }
+  };
+
+  api.crypto_pairs = function(callback){
+    var tUri =  "https://nummus.robinhood.com/" + endpoints.currency_pairs
+    if (callback && typeof callback == "function") {
+      // do something
+      return _request.get({
+          uri: tUri,
+          headers: {
+            'Host': 'nummus.robinhood.com'
+          }
+        }, callback);
+    }else{
+      return _rp.get({
+          uri: tUri,
+          headers: {
+            'Host': 'nummus.robinhood.com'
+          }
+        });
+    }
+  };
+
+  api.crypto_init = function(callback){
+    var tUri =  "https://nummus.robinhood.com/" + endpoints.currency_pairs;
+    return api.crypto_pairs()
+    .then(success => {
+      api.crypto.pairs = success.results;
+      return success.results;
+    })
   };
 
 

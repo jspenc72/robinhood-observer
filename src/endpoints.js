@@ -23,7 +23,7 @@ module.exports = {
     document_requests: 'upload/document_requests/',
     user: 'user/',
 
-    user_additional_info: "user/additional_info/",
+    user_additional_in  : "user/additional_info/",
     user_basic_info: "user/basic_info/",
     user_employment: "user/employment/",
     user_investment_profile: "user/investment_profile/",
@@ -39,5 +39,9 @@ module.exports = {
     sp500_up: 'midlands/movers/sp500/?direction=up',
     sp500_down: 'midlands/movers/sp500/?direction=down',
     news: 'midlands/news/',
-    tag: 'midlands/tags/tag/'
+    tag: 'midlands/tags/tag/',
+
+    currency_pairs: 'currency_pairs/',
+    marketdata_forex_quotes: 'marketdata/forex/quotes/',
+    marketdata_forex_historicals: '/marketdata/forex/historicals/', //API expects https://api.robinhood.com/marketdata/forex/historicals/{{_id}}/?bounds=24_7&interval=15second&span=hour
 }
