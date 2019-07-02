@@ -276,6 +276,42 @@ function Robinhood(opts, callback) {
    return source
   };
 
+    /**
+   * [observeCryptoQuote description]
+   * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+   * @return {Observable}               An observable which updates on the frequency provided.
+   */
+
+  api.observeCryptoQuote = function(symbol, frequency){
+    frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
+    var count = 0;
+    var source = Rx.Observable.create(function (observer) {
+      var intrvl
+      api.crypto_init()
+      .then(success => {
+        intrvl = setInterval(function(){
+          console.log(new Date())
+          api.crypto_quote(symbol)
+          .then(success => {
+            observer.onNext(success);
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        }, frequency);
+      })
+      .catch(err => {
+        console.error(err)
+        return err
+      })
+      return () => {
+        clearInterval(intrvl);
+      }      
+    })
+    return source
+   };
+
+
   /* +--------------------------------+ *
    * |      Robinhood API methods        | *
    * +--------------------------------+ */
@@ -368,6 +404,12 @@ function Robinhood(opts, callback) {
     filtered = _.filter(api.crypto.pairs, function(o) {
       return (symbol.indexOf(o.symbol) > -1) || (symbol.indexOf(o.symbol.split('-')[0]) > -1)
     })
+    indexed = _.map(filtered, (o) => {
+      var index = (symbol.indexOf(o.symbol) > -1) ? symbol.indexOf(o.symbol) : ((symbol.indexOf(o.symbol.split('-')[0]) > -1) ? symbol.indexOf(o.symbol.split('-')[0]) : 0)
+      o.index = index;
+      return o;
+    });
+    sorted = _.sortBy(indexed, ['index'])
     targets = _.map(filtered, item => {
       return item.id
     }).join(',')
@@ -414,6 +456,8 @@ function Robinhood(opts, callback) {
       return success.results;
     })
   };
+
+  
 
 
   /**

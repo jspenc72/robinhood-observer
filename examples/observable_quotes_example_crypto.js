@@ -17,7 +17,7 @@ var Robinhood = require('../src')(credentials, function(){
       return Robinhood.crypto_quote(["OMG", "BTC", "XRP", "BTC-USD"])
     })
     .then(success => {
-      console.log(success)
+      console.log(success);
     })
     .catch(err => {
       console.error(err);
