@@ -410,7 +410,7 @@ function Robinhood(opts, callback) {
       return o;
     });
     sorted = _.sortBy(indexed, ['index'])
-    targets = _.map(filtered, item => {
+    targets = _.map(sorted, item => {
       return item.id
     }).join(',')
     
