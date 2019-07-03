@@ -5,9 +5,9 @@ var RxJS = require('rxjs'),
     _ = require("lodash"),
     fs = require("fs"),
     Device = require("./device.js"),
-    auth = require("./auth.js"),
+    Auth = require("./auth.js"),
     endpoints = require("./endpoints"),
-    headers = require("./headers")
+    Crypto = require("./crypto")
   
     'use strict';
 
@@ -23,12 +23,12 @@ function Robinhood(opts, callback) {
    * +--------------------------------+ */
   var _apiUrl = 'https://api.robinhood.com/';
   var device = new Device()
+  var crypto = new Crypto()
+  var auth = new Auth()
   var _options = opts || {},
-      // Private API Endpointsf
+      // Private API Endpointsff
     _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
     _isInit = false,
-    _request = auth._request.defaults(),
-    _rp = auth._rp.defaults(),
     _private = {
       session: {},
       account: null,
@@ -43,15 +43,15 @@ function Robinhood(opts, callback) {
     _private.username = _.has(_options, 'username') ? _options.username : (process.env.ROBINHOOD_USERNAME ? process.env.ROBINHOOD_USERNAME : null);
     _private.password = _.has(_options, 'password') ? _options.password : (process.env.ROBINHOOD_PASSWORD ? process.env.ROBINHOOD_PASSWORD : null);
     _private.auth_token = _.has(_options, 'token') ? _options.token : (process.env.ROBINHOOD_TOKEN ? process.env.ROBINHOOD_TOKEN : null);
-    auth.setHeaders(headers);
+    auth.setHeaders(auth.headers);
     if (!_private.auth_token) {
       // Check if cached
       if(device.registered){
         // Load device ID and authenticate?
         console.log("device already registered")
-        headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
+        auth.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
         _build_auth_header(device.access_token);        
-        _setHeaders();
+        auth.setHeaders(auth.headers);
         // Set account
         _set_account()
           .then(() => {
@@ -67,7 +67,7 @@ function Robinhood(opts, callback) {
         .then((body) => {
           return auth.collect2fa()
           .then(user_input => {
-            headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
+            auth.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
             return auth.respond2faChallenge(user_input, body.challenge.id)
           })
         })
@@ -88,7 +88,7 @@ function Robinhood(opts, callback) {
           console.log(body)
           device.updateTokens(body)
           _build_auth_header(device.access_token);        
-          _setHeaders();
+          auth.setHeaders(auth.headers);
           
           // Set account
           _set_account()
@@ -104,20 +104,6 @@ function Robinhood(opts, callback) {
         })
       }
     }
-  }
-
-  function _setHeaders(){
-    _request = auth._request.defaults({
-      headers: headers,
-      json: true,
-      gzip: true
-    });
-
-    _rp = auth._rp.defaults({
-      headers: headers,
-      json: true,
-      gzip: true
-    });
   }
 
   function _set_account() {
@@ -140,24 +126,28 @@ function Robinhood(opts, callback) {
   }
 
   function _build_auth_header(token) {
-    headers.Authorization = 'Bearer ' + token;
+    auth.headers.Authorization = 'Bearer ' + token;
   }
 
   function options_from_chain({ next, results }) {
+
     return new Promise((resolve, reject) => {
       if (!next) return resolve(results);
-      _request.get(
-        {
-          url: next
-        },
-        (err, response, body) =>
-          resolve(
-            options_from_chain({
-              next: body.next,
-              results: results.concat(body.results)
-            })
-          )
-      );
+      var tOpts = {
+        url: next
+      }
+      return auth.get(tOpts, callback)
+      .then(body => {
+        resolve(
+          options_from_chain({
+            next: body.next,
+            results: results.concat(body.results)
+          })
+        )      
+      })
+      .catch(err => {
+        reject(err)
+      })
     });
   }
 
@@ -182,20 +172,14 @@ function Robinhood(opts, callback) {
     return Promise.all(
       grouped_options.map(group => {
         let option_urls = group.map(option => encodeURIComponent(option.url));
-        return new Promise((resolve, reject) => {
-          let request = _request.get(
-            {
-              uri:
-                _apiUrl +
-                endpoints.options_marketdata +
-                '?instruments=' +
-                option_urls.join('%2C')
-            },
-            (err, response, { results }) => {
-              resolve(results);
-            }
-          );
-        });
+        var tOpts = {
+          uri:
+            _apiUrl +
+            endpoints.options_marketdata +
+            '?instruments=' +
+            option_urls.join('%2C')
+        }
+        return auth.get(tOpts, callback)
       })
     ).then(options_details => {
       return [options_details.flat(), grouped_options.flat()];
@@ -235,14 +219,14 @@ function Robinhood(opts, callback) {
    var count = 0;
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
-       _rp.get({
-             uri: _apiUrl + endpoints.quotes,
-             qs: { 'symbols': symbol.toUpperCase() }
-           })
-           .then(success => {
-
-             observer.onNext(success);
-           })
+        var tOpts = {
+          uri: _apiUrl + endpoints.quotes,
+          qs: { 'symbols': symbol.toUpperCase() }
+        }
+        auth.get(tOpts)
+        .then(success => {
+          observer.onNext(success);
+        })
      }, frequency);
      return () => {
        clearInterval(intrvl);
@@ -259,9 +243,10 @@ function Robinhood(opts, callback) {
    frequency = frequency ? frequency : 5000;   //Set frequency of updates to 5000 by default
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
-       _rp.get({
-             uri: _apiUrl + endpoints.orders
-           })
+      var tOpts = {
+        uri: _apiUrl + endpoints.orders
+      }
+      auth.get(tOpts)
            .then(success => {
              observer.onNext(success);
            })
@@ -283,6 +268,10 @@ function Robinhood(opts, callback) {
    */
 
   api.observeCryptoQuote = function(symbol, frequency){
+    crypto.orders.cancel({})
+    crypto.orders.create({})
+    
+    
     frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
     var count = 0;
     var source = Rx.Observable.create(function (observer) {
@@ -324,9 +313,9 @@ function Robinhood(opts, callback) {
    // Invoke robinhood logout.  Note: User will need to reintantiate
    // this package to get a new token!
    api.expire_token = function(callback) {
-     return _request.post({
-       uri: _apiUrl + endpoints.logout
-     }, callback);
+     return auth.post({
+        uri: _apiUrl + endpoints.logout
+      }, callback)
    };
 
   /**
@@ -339,11 +328,7 @@ function Robinhood(opts, callback) {
     var tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
 
   /**
@@ -360,11 +345,7 @@ function Robinhood(opts, callback) {
         uri: tUri,
         qs: { 'symbols': symbol }
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [instruments description]
@@ -380,11 +361,7 @@ function Robinhood(opts, callback) {
         uri: tUri,
         qs: {'symbols': symbol.toUpperCase()}
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
 
   /**
@@ -413,39 +390,21 @@ function Robinhood(opts, callback) {
     targets = _.map(sorted, item => {
       return item.id
     }).join(',')
-    
-    if (callback && typeof callback == "function") {
-      // do something
-      return _request.get({
-          uri: _apiUrl + endpoints.marketdata_forex_quotes,
-          qs: { 'ids': targets }
-        }, callback);
-    }else{
-      return _rp.get({
-          uri: _apiUrl + endpoints.marketdata_forex_quotes,
-          qs: { 'ids': targets }
-        });
+    var tOpts = {
+      uri: _apiUrl + endpoints.marketdata_forex_quotes,
+      qs: { 'ids': targets }
     }
+    return auth.get(tOpts, callback)
   };
 
   api.crypto_pairs = function(callback){
-    var tUri =  "https://nummus.robinhood.com/" + endpoints.currency_pairs
-    if (callback && typeof callback == "function") {
-      // do something
-      return _request.get({
-          uri: tUri,
-          headers: {
-            'Host': 'nummus.robinhood.com'
-          }
-        }, callback);
-    }else{
-      return _rp.get({
-          uri: tUri,
-          headers: {
-            'Host': 'nummus.robinhood.com'
-          }
-        });
+    var tOpts = {
+      uri: "https://nummus.robinhood.com/" + endpoints.currency_pairs,
+      headers: {
+        'Host': 'nummus.robinhood.com'
+      }
     }
+    return auth.get(tOpts, callback)
   };
 
   api.crypto_init = function(callback){
@@ -457,9 +416,6 @@ function Robinhood(opts, callback) {
     })
   };
 
-  
-
-
   /**
    * [quote description]
    * @param  [String]   symbol   [description]
@@ -468,22 +424,13 @@ function Robinhood(opts, callback) {
    */
   api.quote = function(symbol, callback){
     var tUri = _apiUrl,
-        tOpts = {
-        uri: tUri
-      };
-    symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
-    if (callback && typeof callback == "function") {
-      // do something
-      return _request.get({
-          uri: _apiUrl + endpoints.quotes,
-          qs: { 'symbols': symbol.toUpperCase() }
-        }, callback);
-    }else{
-      return _rp.get({
-          uri: _apiUrl + endpoints.quotes,
-          qs: { 'symbols': symbol.toUpperCase() }
-        });
-    }
+        symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol
+
+    var tOpts = {
+      uri: _apiUrl + endpoints.quotes,
+      qs: { 'symbols': symbol.toUpperCase() }
+    };
+    return auth.get(tOpts, callback)
   };
 
   api.quote_data = function(sybmol, callback){
@@ -499,11 +446,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: _apiUrl + endpoints.accounts
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [user description]
@@ -511,17 +454,10 @@ function Robinhood(opts, callback) {
    * @return {[Function or Promise]}            [description]
    */
   api.user = function(callback){
-    var tUri = _apiUrl + endpoints.user,
-        tOpts = {
-      uri: tUri
-    };
-    if (callback && typeof callback == "function") {
-      return _request.get({
-        uri: _apiUrl + endpoints.user
-      }, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    var tOpts = {
+          uri: _apiUrl + endpoints.user
+        }
+    return auth.get(tOpts, callback)
   };
 
   /**
@@ -534,11 +470,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: _apiUrl + endpoints.user_basic_info
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [userAdditionalInfo description]
@@ -550,11 +482,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: _apiUrl + endpoints.user_additional_info
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
 
   /**
@@ -567,11 +495,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: _apiUrl + endpoints.additional_info
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
 
 
@@ -585,13 +509,8 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: _apiUrl + endpoints.investment_profile
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
-
 
   /**
    * [dividends description]
@@ -603,11 +522,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [orders description]
@@ -619,11 +534,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [cancel description]
@@ -639,13 +550,13 @@ function Robinhood(opts, callback) {
          };
 
        if (callback && typeof callback == "function") {
-             if(order.cancel){
-               return _request.post(tOpts, callback);
-             }else{
-               callback({message: order.state=="cancelled" ? "Order already cancelled." : "Order cannot be cancelled.", order: order }, null, null);
-             }
+          if(order.cancel){
+            return auth.post(tOpts, callback)
+          }else{
+            callback({message: order.state=="cancelled" ? "Order already cancelled." : "Order cannot be cancelled.", order: order }, null, null);
+          }
        }else{
-         return _rp.get(tOpts);
+         return auth.get(tOpts);
        }
      }else{
        if(typeof order == "function"){
@@ -697,11 +608,7 @@ function Robinhood(opts, callback) {
           type: options.type || 'market'
         }
       };
-    if (callback && typeof callback == "function") {
-      return _request.post(tOpts, callback);
-    }else{
-      return _rp.post(tOpts);
-    }
+    return auth.post(tOpts, callback)
   };
   /**
    * [place_buy_order description]
@@ -816,11 +723,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [news description]
@@ -833,11 +736,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [markets description]
@@ -849,11 +748,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: tUri
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [sp500_up description]
@@ -865,11 +760,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: tUri
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [sp500_down description]
@@ -881,11 +772,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [create_watch_list description]
@@ -901,11 +788,7 @@ function Robinhood(opts, callback) {
         name: name
       }
     };
-    if (callback && typeof callback == "function") {
-      return _request.post(tOpts, callback);
-    }else{
-      return _rp.post(tOpts);
-    }
+    return auth.post(tOpts, callback)
   };
   /**
    * [watchlists description]
@@ -917,11 +800,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: tUri
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [splits description]
@@ -934,11 +813,7 @@ function Robinhood(opts, callback) {
         tOpts = {
       uri: tUri
     };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [historicals description]
@@ -958,11 +833,7 @@ function Robinhood(opts, callback) {
         tOpts = {
         uri: tUri
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   /**
    * [url description]
@@ -974,16 +845,13 @@ function Robinhood(opts, callback) {
     var tOpts = {
         uri: url
       };
-    if (callback && typeof callback == "function") {
-      return _request.get(tOpts, callback);
-    }else{
-      return _rp.get(tOpts);
-    }
+    return auth.get(tOpts, callback)
   };
   api.init = _init
   api.device  = Device
   api.auth = auth
   api.endpoints = endpoints
+  api.crypto = crypto
   _init(_options);
   return api;
 }
