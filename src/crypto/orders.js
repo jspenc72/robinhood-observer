@@ -9,14 +9,21 @@ class Orders {
     constructor() {
 
     }
-    cancel(order) {
-        console.log("cancel", config.nummus_url)
+    cancel(order_id) {
+        console.log("cancel()", order_id)
+        var tOps = {
+            uri: config.nummus_url + endpoints.orders + order_id +"/cancel/"
+        }
+        return this.auth.post(tOpts, callback)        
     }
     create(order) {
-        console.log("create")
+        console.log("create()", order)
         var tOps = {
-            
+            uri: config.nummus_url + endpoints.orders,
+            body: order,
+            json: true
         }
+        return this.auth.post(tOpts, callback)
     }
 }  
 

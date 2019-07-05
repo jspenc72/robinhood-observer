@@ -23,8 +23,8 @@ function Robinhood(opts, callback) {
    * +--------------------------------+ */
   var _apiUrl = 'https://api.robinhood.com/';
   var device = new Device()
-  var crypto = new Crypto()
   var auth = new Auth()
+  var crypto = new Crypto()
   var _options = opts || {},
       // Private API Endpointsff
     _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
@@ -48,7 +48,7 @@ function Robinhood(opts, callback) {
       // Check if cached
       if(device.registered){
         // Load device ID and authenticate?
-        console.log("device already registered")
+        console.log("Device previously registered: ", device.challenge.id)
         auth.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
         _build_auth_header(device.access_token);        
         auth.setHeaders(auth.headers);
@@ -268,8 +268,8 @@ function Robinhood(opts, callback) {
    */
 
   api.observeCryptoQuote = function(symbol, frequency){
-    crypto.orders.cancel({})
-    crypto.orders.create({})
+    // crypto.orders.cancel({})
+    // crypto.orders.create({})
     
     
     frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default

@@ -24,8 +24,7 @@ class Quotes {
             .catch(err => {
               console.error(err)
             })
-          }, frequency);
-
+          }, frequency);  
           return () => {
             clearInterval(intrvl);
           }      

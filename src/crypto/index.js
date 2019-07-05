@@ -13,17 +13,21 @@ class Crypto {
     pairs = []
     auth = new Auth()
     orders = new Orders()
-    quotes = new Quotes(this.auth, this.pairs)   
+    quotes = {}
     constructor() {
         // Do crypto init
-        this.getPairs()
-        .then(success => {
-          this.pairs = success.results
-          this.quotes = new Quotes(this.auth, this.pairs)
-        })
-        .catch(err => {
-          console.error(err)
-        })
+        // Added 500 ms timeout to delay request until after auth headers are set.
+        //MARK: NEED to and PLAN to make this more resilient   to slow bandwidth networks.
+          setTimeout(() => {
+            this.getPairs()
+            .then(success => {
+              this.pairs = success.results
+              this.quotes = new Quotes(this.auth, this.pairs)
+            })
+            .catch(err => {
+              console.error(err)
+            })              
+          }, 500)
     }
 
     getPairs(callback){
