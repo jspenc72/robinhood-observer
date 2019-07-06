@@ -16,6 +16,7 @@ var RxJS = require('rxjs'),
  * @param { username: string, password: string }   opts     [description]
  * @param {Function} callback [description]
  */
+
 function Robinhood(opts, callback) {
   var api = { test: "value", crypto: {}};
   /* +--------------------------------+ *
@@ -26,7 +27,7 @@ function Robinhood(opts, callback) {
   var auth = new Auth()
   var crypto = new Crypto()
   var _options = opts || {},
-      // Private API Endpointsff
+      // Private API Endpoints
     _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
     _isInit = false,
     _private = {
@@ -44,7 +45,6 @@ function Robinhood(opts, callback) {
     _private.password = _.has(_options, 'password') ? _options.password : (process.env.ROBINHOOD_PASSWORD ? process.env.ROBINHOOD_PASSWORD : null);
     _private.auth_token = _.has(_options, 'token') ? _options.token : (process.env.ROBINHOOD_TOKEN ? process.env.ROBINHOOD_TOKEN : null);
     
-    auth.setHeaders(auth.headers);
     if (!_private.auth_token) {
       auth.init(_private, device)
       .then((_private) => {
@@ -76,10 +76,6 @@ function Robinhood(opts, callback) {
         resolve();
       });
     });
-  }
-
-  function _build_auth_header(token) {
-    auth.headers.Authorization = 'Bearer ' + token;
   }
 
   function options_from_chain({ next, results }) {
