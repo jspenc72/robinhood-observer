@@ -12,7 +12,7 @@ if (process.env.ROBINHOOD_USERNAME) {
 }
 var Robinhood = require('../src')(credentials, function(){
   setTimeout(() => {
-    var subscription = Robinhood.observeCryptoQuote(["ETC"], 800)
+    var subscription = Robinhood.observeCryptoQuote(["ETC"], 2800)
     .map(quote => quote.results)
     .distinct()                         //Only use distict results...
     .subscribe(x => {

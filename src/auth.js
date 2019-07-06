@@ -16,10 +16,60 @@ class Auth {
   headers = headers
   _request = request.defaults()
   _rp = rp.defaults()
-
+  
 	constructor() {
     // Do auth init and set headers
+    // Set headers before sending any requests
     this.setHeaders(this.headers)
+  }
+
+  init(_private, device) {
+    this._private = _private;
+    this.device = device;
+    return new Promise((resolve, reject) => {
+      if(this.device.registered){
+        // Load device ID and authenticate?
+        console.log("Device previously registered: ", device.challenge.id)
+        this.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
+        this._build_auth_header(device.access_token);        
+        this.setHeaders(this.headers);
+        _private.headers = this.headers
+        resolve(_private)
+      }else{
+        this.registerTokenWith(this.device, _private.username, _private.password)
+        .then((body) => {
+          return this.collect2fa()
+          .then(user_input => {
+            this.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
+            return this.respond2faChallenge(user_input, body.challenge.id)
+          })
+        })
+        .then((body) => {
+            // Check if 2fa succeeded
+            if(body.status == "validated"){
+              // Device is now registered.
+
+              return this.requestBearerToken(this.device, _private.username, _private.password)
+            }else if (body.detail == "Challenge response is invalid."){
+              console.log("The 2FA code you entered was incorrect.")
+              process.exit(1)
+            }else{
+              console.log("UNKNOWN CONDITIION")
+            }
+        })
+        .then((body)=> {
+          console.log(body)
+          this.device.updateTokens(body)
+          this._build_auth_header(device.access_token);        
+          this.setHeaders(this.headers);
+          _private.headers = this.headers
+          resolve(_private)
+        })
+        .catch(err => {
+          console.error(err)
+        })        
+      }
+    })
   }
 
   get(options, callback){
@@ -52,6 +102,10 @@ class Auth {
     });
   }
 
+
+  _build_auth_header(token) {
+    this.headers.Authorization = 'Bearer ' + token;
+  }
 
   // 1. Generate Device Token
   // var device = new Device()

@@ -43,66 +43,19 @@ function Robinhood(opts, callback) {
     _private.username = _.has(_options, 'username') ? _options.username : (process.env.ROBINHOOD_USERNAME ? process.env.ROBINHOOD_USERNAME : null);
     _private.password = _.has(_options, 'password') ? _options.password : (process.env.ROBINHOOD_PASSWORD ? process.env.ROBINHOOD_PASSWORD : null);
     _private.auth_token = _.has(_options, 'token') ? _options.token : (process.env.ROBINHOOD_TOKEN ? process.env.ROBINHOOD_TOKEN : null);
+    
     auth.setHeaders(auth.headers);
     if (!_private.auth_token) {
-      // Check if cached
-      if(device.registered){
-        // Load device ID and authenticate?
-        console.log("Device previously registered: ", device.challenge.id)
-        auth.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
-        _build_auth_header(device.access_token);        
-        auth.setHeaders(auth.headers);
-        // Set account
-        _set_account()
-          .then(() => {
-            callback.call();
-          })
-          .catch((err) => {
-            throw err;
-          });          
-      }else{
-        // 1. Register Device
-        console.log("Registering Device")
-        auth.registerTokenWith(device, _private.username, _private.password)
-        .then((body) => {
-          return auth.collect2fa()
-          .then(user_input => {
-            auth.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
-            return auth.respond2faChallenge(user_input, body.challenge.id)
-          })
-        })
-        .then((body) => {
-            // Check if 2fa succeeded
-            if(body.status == "validated"){
-              // Device is now registered.
-
-              return auth.requestBearerToken(device, _private.username, _private.password)
-            }else if (body.detail == "Challenge response is invalid."){
-              console.log("The 2FA code you entered was incorrect.")
-              process.exit(1)
-            }else{
-              console.log("UNKNOWN CONDITIION")
-            }
-        })
-        .then((body)=> {
-          console.log(body)
-          device.updateTokens(body)
-          _build_auth_header(device.access_token);        
-          auth.setHeaders(auth.headers);
-          
-          // Set account
-          _set_account()
-            .then(() => {
-              callback.call();
-            })
-            .catch((err) => {
-              throw err;
-            });          
-        })
-        .catch(err => {
-          console.error(err)
-        })
-      }
+      auth.init(_private, device)
+      .then((_private) => {
+        return _set_account()
+      })
+      .then(() => {
+        callback.call();
+      })
+      .catch((err) => {
+        throw err;
+      });
     }
   }
 
