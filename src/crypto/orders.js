@@ -5,10 +5,12 @@ var config = require('../config'),
     config = require('../config')
 
 class Orders {
-    auth = new Auth()
-    constructor() {
-
+    constructor(auth, pairs) {
+        // Do crypto init
+        this.auth = auth
+        this.pairs = pairs
     }
+
     cancel(order_id) {
         console.log("cancel()", order_id)
         var tOps = {

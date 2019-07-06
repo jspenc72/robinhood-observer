@@ -18,9 +18,9 @@ class Auth {
   _rp = rp.defaults()
   
 	constructor() {
-    // Do auth init and set headers
     // Set headers before sending any requests
     this.setHeaders(this.headers)
+    // Do auth init and set headers
   }
 
   init(_private, device) {

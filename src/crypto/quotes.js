@@ -5,18 +5,17 @@ var config = require('../config'),
     endpoints = require("../endpoints")
 
 class Quotes {
-    auth = {}
-    pairs = {}
     constructor(auth, pairs) {
         // Do crypto init
-        this.pairs = pairs
         this.auth = auth
+        this.pairs = pairs
     }
     observe(symbol, frequency) {
         frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
         var source = Rx.Observable.create((observer) => {
           var intrvl
           intrvl = setInterval(() => {
+            console.log(new Date())
             this.get(symbol)
             .then(success => {
               observer.onNext(success);

@@ -51,11 +51,16 @@ function Robinhood(opts, callback) {
         return _set_account()
       })
       .then(() => {
+        return crypto.init(auth)
+      })
+      .then(success => {
         callback.call();
       })
       .catch((err) => {
         throw err;
       });
+    }else{
+      throw new Error("This form of authentication has been deprecated in lieu of using Robinhood 2FA with username, password combo")
     }
   }
 
@@ -210,16 +215,13 @@ function Robinhood(opts, callback) {
    return source
   };
 
-    /**
+  /**
    * [observeCryptoQuote description]
    * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
    * @return {Observable}               An observable which updates on the frequency provided.
    */
 
   api.observeCryptoQuote = function(symbol, frequency){
-    // crypto.orders.cancel({})
-    // crypto.orders.create({})
-    
     
     frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
     var count = 0;

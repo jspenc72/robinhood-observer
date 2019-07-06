@@ -11,23 +11,25 @@ var RxJS = require('rxjs'),
     
 class Crypto {
     pairs = []
-    auth = new Auth()
-    orders = new Orders()
-    quotes = {}
     constructor() {
-        // Do crypto init
-        // Added 500 ms timeout to delay request until after auth headers are set.
-        //MARK: NEED to and PLAN to make this more resilient   to slow bandwidth networks.
-          setTimeout(() => {
-            this.getPairs()
-            .then(success => {
-              this.pairs = success.results
-              this.quotes = new Quotes(this.auth, this.pairs)
-            })
-            .catch(err => {
-              console.error(err)
-            })              
-          }, 500)
+
+    }
+
+    init(auth){
+      this.auth = auth
+      return new Promise((resolve, reject) => {
+        this.getPairs()
+        .then(success => {
+          this.pairs = success.results
+          this.quotes = new Quotes(this.auth, this.pairs)
+          this.orders = new Orders(this.auth, this.pairs)
+          resolve(success)
+        })
+        .catch(err => {
+          console.error(err)
+          reject(err)
+        })
+      })
     }
 
     getPairs(callback){
