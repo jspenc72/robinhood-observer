@@ -58,7 +58,6 @@ class Auth {
             }
         })
         .then((body)=> {
-          console.log(body)
           this.device.updateTokens(body)
           this._build_auth_header(device.access_token);        
           this.setHeaders(this.headers);

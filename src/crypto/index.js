@@ -23,7 +23,6 @@ class Crypto {
               'Host': 'nummus.robinhood.com'
           }        
       }    
-      console.log(tOpts)
       return this.auth.get(tOpts)
     }
 

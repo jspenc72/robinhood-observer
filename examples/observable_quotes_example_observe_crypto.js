@@ -48,6 +48,7 @@ var Robinhood = require('../src')(credentials, function(){
     //Unsubscribe to updates for the data after 10 minutes
     console.log("end")
     subscription.dispose();
+    process.exit(0)
   }, 60000*10);
 
 });
