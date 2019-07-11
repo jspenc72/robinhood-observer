@@ -7,6 +7,7 @@ var RxJS = require('rxjs'),
   endpoints = require("../endpoints"),
   Orders = require("./orders"),
   Quotes = require("./quotes"),
+  Portfolios = require("./portfolios"),
   config = require('../config')
     
 class Crypto {
@@ -40,6 +41,7 @@ class Crypto {
           this.pairs = success.results
           this.quotes = new Quotes(this.auth, this.pairs)
           this.orders = new Orders(this.auth, this.pairs)
+          this.portfolios = new Portfolios(this.auth, this.pairs)
           resolve(success)
         })
         .catch(err => {

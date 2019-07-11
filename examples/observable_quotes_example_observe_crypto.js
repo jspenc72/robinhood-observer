@@ -16,7 +16,7 @@ BUY_COUNT = 0
 
 var Robinhood = require('../src')(credentials, function(){
 
-  var subscription = Robinhood.crypto.quotes.observe(["ETC"], 2000)
+  var quotesSubscription = Robinhood.crypto.quotes.observe(["ETC"], 2000)
   .map(quote => quote.results)
   .map(results => {
     const obj = results[0]
@@ -34,7 +34,7 @@ var Robinhood = require('../src')(credentials, function(){
     console.log(x, mid_price);
     if(x.mark_price < mid_price){
       if(BUY_COUNT<BUY_COUNT_LIMIT){
-        console.log("buy!")
+        console.log("buy!")        
       }else{
         console.log("dont buy!")
       }
@@ -44,11 +44,33 @@ var Robinhood = require('../src')(credentials, function(){
   }, e => {
     console.error(e)
   }, () => console.log('disposed'));
+
+  var portfoliosSubscription = Robinhood.crypto.portfolios.observe(4000)
+  .map(quote => quote.results)
+  .map(results => {
+    const obj = results[0]
+    for (const key in obj) {
+      let value = obj[key];
+      let nan = Number.isNaN(Number.parseFloat(value))
+      console.log(nan)
+      obj[key] = ((key.includes("id")) || (key.includes("updated_at"))) ? value : parseFloat(value)
+    }
+    return obj
+  })
+  .distinct() //Only use distict results...
+  .subscribe(x => {
+    console.log(x)
+  }, e => {
+    console.error(e)
+  }, () => console.log('disposed'));
+
   setTimeout(function(){
     //Unsubscribe to updates for the data after 10 minutes
     console.log("end")
-    subscription.dispose();
+    quotesSubscription.dispose();
+    portfoliosSubscription.dispose();
     process.exit(0)
   }, 60000*10);
+
 
 });

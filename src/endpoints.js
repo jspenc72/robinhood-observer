@@ -42,6 +42,7 @@ module.exports = {
     tag: 'midlands/tags/tag/',
 
     currency_pairs: 'currency_pairs/',
+    portfolios: 'portfolios/',
     marketdata_forex_quotes: 'marketdata/forex/quotes/',
     marketdata_forex_historicals: '/marketdata/forex/historicals/', //API expects https://api.robinhood.com/marketdata/forex/historicals/{{_id}}/?bounds=24_7&interval=15second&span=hour
 }
