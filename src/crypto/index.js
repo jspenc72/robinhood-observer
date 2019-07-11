@@ -11,14 +11,32 @@ var RxJS = require('rxjs'),
     
 class Crypto {
     pairs = []
+    account = {}
     constructor() {
 
     }
 
+    getRobinhoodCryptoAccount(account_id) {
+      var tOpts = {
+          uri: config.nummus_url + endpoints.accounts,
+          headers: {
+              'Host': 'nummus.robinhood.com'
+          }        
+      }    
+      console.log(tOpts)
+      return this.auth.get(tOpts)
+    }
+
     init(auth){
       this.auth = auth
+    
       return new Promise((resolve, reject) => {
-        this.getPairs()
+        this.getRobinhoodCryptoAccount()
+        .then(success => {
+          this.account = success.results[0]
+          this.auth.crypto_account = success.results[0]
+          return this.getPairs()
+        })
         .then(success => {
           this.pairs = success.results
           this.quotes = new Quotes(this.auth, this.pairs)

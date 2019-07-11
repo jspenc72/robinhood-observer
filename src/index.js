@@ -7,6 +7,7 @@ var RxJS = require('rxjs'),
     Device = require("./device.js"),
     Auth = require("./auth.js"),
     endpoints = require("./endpoints"),
+    config = require("./config"),
     Crypto = require("./crypto")
   
     'use strict';
@@ -63,6 +64,7 @@ function Robinhood(opts, callback) {
       throw new Error("This form of authentication has been deprecated in lieu of using Robinhood 2FA with username, password combo")
     }
   }
+ 
 
   function _set_account() {
     return new Promise(function (resolve, reject) {
@@ -76,12 +78,15 @@ function Robinhood(opts, callback) {
           body.results instanceof Array &&
           body.results.length > 0
         ) {
+
           _private.account = body.results[0].url;
         }
         resolve();
       });
     });
   }
+
+
 
   function options_from_chain({ next, results }) {
 

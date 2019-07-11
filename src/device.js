@@ -20,7 +20,7 @@ class Device {
       var cache = this.readCachedDevice()
       Object.assign(this, JSON.parse(cache))
     }else{
-      this.generateToken() 
+      this.device_token = this.generateToken() 
       this.cacheDevice()
     }
   }
@@ -59,7 +59,6 @@ class Device {
         id += "-";
       }
     }
-    this.device_token = id;
     return id;
   }
 

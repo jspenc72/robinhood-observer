@@ -13,6 +13,13 @@ if (process.env.ROBINHOOD_USERNAME) {
 
 BUY_COUNT_LIMIT = 2
 BUY_COUNT = 0
+var buyOrder = {
+  type: 'limit',
+  side: "buy",
+  quantity: "1.000",
+  price: 7.80,
+  time_in_force: "gtc"
+}
 
 var Robinhood = require('../src')(credentials, function(){
 
@@ -29,15 +36,31 @@ var Robinhood = require('../src')(credentials, function(){
   .distinct() //Only use distict results...
   .subscribe(x => {
     //Do something each time the price changes
-    var mid_price = (x.high_price-((x.high_price-x.low_price)/2))
     console.log(new Date(),"-")
-    console.log(x, mid_price);
-    if(x.mark_price < mid_price){
+    console.log(x);
+    if(x.mark_price < 7.815){
       if(BUY_COUNT<BUY_COUNT_LIMIT){
+        BUY_COUNT = BUY_COUNT+1
+        buyOrder.currency_pair_id = x.id;
+        buyOrder.price = x.mark_price - 0.01
+        
+        // console.log(Robinhood.crypto)
+        Robinhood.crypto.orders.create(buyOrder)
+        .then(success => {
+          console.log("after create()", success)
+          return Robinhood.crypto.orders.cancel(success.id)
+        })
+        .then(success => {
+          console.log("after cancel()", success)
+        })
+        .catch(err => {
+          console.error("error create()", err)
+        })
         console.log("buy!")
       }else{
         console.log("dont buy!")
       }
+
     }else{
       console.log("sell!")
     }
