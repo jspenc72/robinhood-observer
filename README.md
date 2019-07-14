@@ -245,11 +245,6 @@ setTimeout(function(){
   sellSubscription.dispose();
 }, 5000);
 ```
-### Caching device_token
-
-```bash
-
-```
 
 ## Observables
 
