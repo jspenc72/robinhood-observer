@@ -19,15 +19,17 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 ## Features
-*   Works with Robinhoods New 2FA Authentication (As of June 2019)
+*   Works with Robinhoods New SMS 2FA (As of June 2019)
 *   Reactive
-*   Quote Data
+*   Quote Stock Prices
+*   Crypto Quotes
 *   Buy, Sell Orders
 *   Daily Fundamentals
 *   Daily, Weekly, Monthly Historicals
 *   Callback and Promise Support (Bluebird)
 
 ## Installation
+
 ```bash
 $ npm install robinhood-observer --save
 ```
@@ -381,7 +383,7 @@ setTimeout(function(){
 
 
 
-# REST API Methods Unauthenticated
+# REST API Methods Unauthenticated (Robinhood Deprecated)
 
 All non Observable methods return a promise unless a callback is provided as the last optional parameter.
 
