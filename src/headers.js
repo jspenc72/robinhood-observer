@@ -1,3 +1,5 @@
+const agents = require('./user-agents')
+
 module.exports = {
     'Host': 'api.robinhood.com',
     'Accept': '*/*',

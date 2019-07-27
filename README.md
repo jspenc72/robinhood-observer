@@ -72,8 +72,6 @@ var Robinhood = require('robinhood-observer')(credentials, function(){
 
 ```
 
-
-
 ```bash
 node examples/observable_quotes_example.js 
 Enter the 2FA code that was sent to you via sms.
