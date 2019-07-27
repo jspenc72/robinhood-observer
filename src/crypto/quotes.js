@@ -15,9 +15,15 @@ class Quotes {
         var source = Rx.Observable.create((observer) => {
           var intrvl
           intrvl = setInterval(() => {
-            console.log(new Date())
+            
+            var sent = new Date()
+            console.log(sent)
             this.get(symbol)
             .then(success => {
+              
+              var received = new Date()
+              success.sent = sent; 
+              success.received = received;
               observer.onNext(success);
             })
             .catch(err => {

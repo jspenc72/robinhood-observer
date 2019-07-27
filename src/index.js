@@ -823,7 +823,7 @@ if (require.main === module) {
   .parse(process.argv);
 
 } else {
-  console.log('Thanks for using robinhood!');
+  console.log('Thanks for using the robinhood-observer cli!');
 }
 
 
