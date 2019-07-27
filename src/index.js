@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // import device from "./device.mjs"
 var RxJS = require('rxjs'),
     pckg = require('../package.json'),
@@ -815,27 +817,13 @@ function Robinhood(opts, callback) {
 }
 
 if (require.main === module) {
-  console.log('called directly');
-
   program
   .version(pckg.version)
-  .arguments('<cmd> [env]')
-  .action(function (cmd, env) {
-     cmdValue = cmd;
-     envValue = env;
-  });
-  
-  program.parse(process.argv);
-  
-  if (typeof cmdValue === 'undefined') {
-    console.error('no command given!');
-    process.exit(1);
-  }
-  console.log('command:', cmdValue);
-  console.log('environment:', envValue || "no environment given");
+  .command('crypto [query]', 'crypto')
+  .parse(process.argv);
 
 } else {
-  console.log('required as a module');
+  console.log('Thanks for using robinhood!');
 }
 
 

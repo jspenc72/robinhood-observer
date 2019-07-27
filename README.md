@@ -21,12 +21,14 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 ## Features
 *   Works with Robinhoods New SMS 2FA (As of June 2019)
 *   Reactive
+*   Comprehensive CLI
 *   Quote Stock Prices
 *   Crypto Quotes
 *   Buy, Sell Orders
 *   Daily Fundamentals
 *   Daily, Weekly, Monthly Historicals
 *   Callback and Promise Support (Bluebird)
+
 
 ## Installation
 
