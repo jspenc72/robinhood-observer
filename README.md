@@ -54,13 +54,35 @@ $ npm install robinhood-observer --save
 
 ```bash
 $ rh -h
+Usage: rh [options] [command]
+
+Options:
+  -V, --version   output the version number
+  -h, --help      output usage information
+
+Commands:
+  crypto [query]  crypto
+  help [cmd]      display help for [cmd]
+
 $ rh crypto -h
+Usage: rh-crypto [options] [command]
+
+Options:
+  -h, --help                                              output usage information
+
+Commands:
+  quote [options] <frequency> <symbol> [otherSymbols...]
 $ rh crypto quote -h
+Usage: quote [options] <frequency> <symbol> [otherSymbols...]
+
+Options:
+  -o --output <output>  Output Format (table|json) (default: "table")
+  -h, --help            output usage information
 ```
 
 ## CLI Crypto Example 
 
-```bash
+```js
 $ export ROBINHOOD_USERNAME=username
 $ export ROBINHOOD_PASSWORD=password
 $ rh crypto quote 2000 BTC ETC -o table
