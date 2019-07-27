@@ -30,7 +30,13 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 *   Callback and Promise Support (Bluebird)
 
 
-## Installation
+## CLI Install
+
+```bash
+$ npm i -g robinhood-observer 
+```
+
+## Dependency Install
 
 ```bash
 $ npm install robinhood-observer --save
@@ -43,6 +49,61 @@ $ npm install robinhood-observer --save
 | ROBINHOOD_USERNAME  | ''  | Your robinhood Username  |
 | ROBINHOOD_PASSWORD  | ''  | Your robinhood Password  |
 | ROBINHOOD_DEVICE_PATH  | device.json  | Path to store the unique identifier for your 2FA device. |
+
+## CLI Usage
+
+```bash
+$ rh -h
+$ rh crypto -h
+$ rh crypto quote -h
+```
+
+## CLI Crypto Example 
+
+```bash
+$ export ROBINHOOD_USERNAME=username
+$ export ROBINHOOD_PASSWORD=password
+$ rh crypto quote 2000 BTC ETC -o table
+ask_price    bid_price    mark_price   high_price  low_price  open_price  symbol  id                                    volume         
+-----------  -----------  -----------  ----------  ---------  ----------  ------  ------------------------------------  ---------------
+9465.128771  9438.796832  9451.962801  10225.53    9301.11    10119.14    BTCUSD  3d961844-d360-45fc-989b-f6fca761d511  372157.369572  
+5.872        5.858349     5.865174     6.34        5.774      6.2375      ETCUSD  7b577ce3-489d-4269-9408-796a0d1abb3a  27690941.790891
+
+$ rh crypto quote 2000 BTC ETC -o json
+
+{
+  results: [
+    {
+      ask_price: 9462.64,
+      bid_price: 9438.92,
+      mark_price: 9450.78,
+      high_price: 10225.53,
+      low_price: 9301.11,
+      open_price: 10119.14,
+      symbol: 'BTCUSD',
+      id: '3d961844-d360-45fc-989b-f6fca761d511',
+      volume: 372173.980782
+    },
+    {
+      ask_price: 5.871085,
+      bid_price: 5.858349,
+      mark_price: 5.864717,
+      high_price: 6.34,
+      low_price: 5.774,
+      open_price: 6.2375,
+      symbol: 'ETCUSD',
+      id: '7b577ce3-489d-4269-9408-796a0d1abb3a',
+      volume: 27690941.790891
+    }
+  ],
+  quote: {
+    results: [ [Object], [Object] ],
+    sent: 2019-07-27T18:00:39.234Z,
+    received: 2019-07-27T18:00:39.566Z
+  }
+}
+```
+
 
 ## Example Starter Project
 The [example project](https://github.com/jspenc72/robinhood-observer-starter) helps you get started right off the bat and demonstrates some of the cool things you can do with this library.

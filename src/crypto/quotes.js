@@ -14,13 +14,10 @@ class Quotes {
         frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
         var source = Rx.Observable.create((observer) => {
           var intrvl
-          intrvl = setInterval(() => {
-            
+          intrvl = setInterval(() => {            
             var sent = new Date()
-            console.log(sent)
             this.get(symbol)
             .then(success => {
-              
               var received = new Date()
               success.sent = sent; 
               success.received = received;
