@@ -30,13 +30,14 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 *   Callback and Promise Support (Bluebird)
 
 
-## CLI Install
+## Installation
 
 ```bash
+# Globbal Install w/CLI
 $ npm i -g robinhood-observer 
-```
-
 ## Dependency Install
+$ npm install robinhood-observer --save
+```
 
 ```bash
 $ npm install robinhood-observer --save
