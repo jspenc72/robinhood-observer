@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Comprehensive client featuring RxJS Streams and CLI for Robinhood Free Stock Trading",
   "main": "src/index.js",
   "scripts": {
