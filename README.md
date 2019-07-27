@@ -36,11 +36,7 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 # Globbal Install w/CLI
 $ npm i -g robinhood-observer 
 ## Dependency Install
-$ npm install robinhood-observer --save
-```
-
-```bash
-$ npm install robinhood-observer --save
+$ npm i robinhood-observer --save
 ```
 
 ## Environment Variables
