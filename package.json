@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Comprehensive client featuring RxJS Streams and CLI for Robinhood Free Stock Trading",
   "main": "src/index.js",
   "scripts": {
@@ -11,14 +11,21 @@
     "url": "https://github.com/jspenc72/robinhood-observer.git"
   },
   "keywords": [
-    "stocks",
-    "trading",
     "robinhood",
+    "stocks",
+    "broker",
+    "algo",
+    "trade",
+    "trading",
+    "options",
     "bluebird",
     "rxjs",
     "rx",
     "day-trading",
-    "stock",
+    "stocks",
+    "streaming",
+    "finance",
+    "market",
     "nyse",
     "nasdaq",
     "algotrade",
