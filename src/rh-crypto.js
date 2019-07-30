@@ -57,6 +57,67 @@ program
 
   });
   // END Robinhood
-}); 
+});
+
+
+program
+.command('create <symbol> <type> <side> <quantity> <price>')
+.action((symbol, type, side, quantity, price) => {
+  console.log(symbol, type, side, quantity, price)
+  var Robinhood = require('../src')(null, function(){
+
+    // var createOrder = {
+    //   type: 'limit',
+    //   side: "buy",
+    //   quantity: "1.000",
+    //   price: 7.80,
+    //   time_in_force: "gtc"
+    // }
+
+    var createOrder = {
+      type: type,
+      side: side,
+      quantity: quantity,
+      price: price,
+      time_in_force: "gtc"
+    }
+
+    Robinhood.crypto.orders.create(createOrder)
+    .then(success => {
+      console.log("after create()", success)
+      process.exit(0)
+    })
+    .catch(err => {
+      console.error("error create()", err)
+      process.exit(1)
+    })
+    
+  });
+  // END Robinhood
+});
+
+
+program
+.command('cancel <orderId>')
+.action((orderId) => {
+  console.log(orderId)
+  var Robinhood = require('../src')(null, function(){
+    Robinhood.crypto.orders.cancel(orderId)
+    .then(success => {
+      console.log("after create()", success)
+      process.exit(0)
+    })
+    .catch(err => {
+      console.error("error create()", err)
+      process.exit(1)
+    })
+    
+  });
+  // END Robinhood
+});
+
+
+
+
 program.parse(process.argv);
 
