@@ -112,37 +112,41 @@ class Auth {
   // 2. Register Device Token, with User Credentials
   registerTokenWith(device, username, password) {
     return new Promise((resolve, reject) => {
-      this.post(
-        {
-          uri: _apiUrl + endpoints.login,
-          form: {
-            grant_type: 'password',
-            scope: 'internal',
-            client_id: _clientId,
-            expires_in: 86400,
-            device_token: device.device_token,
-            password: password,
-            username: username,
-            challenge_type: 'sms'
+      if(!username || !password){
+        reject(new Error("Username or Password is undefined, did you export ROBINHOOD_USERNAME and ROBINHOOD_PASSWORD?"))
+      }else{
+        this.post(
+          {
+            uri: _apiUrl + endpoints.login,
+            form: {
+              grant_type: 'password',
+              scope: 'internal',
+              client_id: _clientId,
+              expires_in: 86400,
+              device_token: device.device_token,
+              password: password,
+              username: username,
+              challenge_type: 'sms'
+            }
+          },
+          function (err, httpResponse, body) {
+            if (err) {
+              reject(err);
+            }else if(body.detail == "Request blocked, challenge issued."){
+              device.register(body)
+              resolve(body)
+            }else if(body.mfa_required == true && body.mfa_type == 'sms') {
+              reject(new Error('You must disable 2FA on your account for this to work.'))
+            } else if(body.detail == "Unable to log in with provided credentials.") {
+              reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
+            }else if (!body.access_token) {
+              reject(new Error('token not found ' + JSON.stringify(httpResponse)));
+            } else{
+              reject(new Error('token found ' + JSON.stringify(httpResponse)));          
+            }
           }
-        },
-        function (err, httpResponse, body) {
-          if (err) {
-            reject(err);
-          }else if(body.detail == "Request blocked, challenge issued."){
-            device.register(body)
-            resolve(body)
-          }else if(body.mfa_required == true && body.mfa_type == 'sms') {
-            reject(new Error('You must disable 2FA on your account for this to work.'))
-          } else if(body.detail == "Unable to log in with provided credentials.") {
-            reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
-          }else if (!body.access_token) {
-            reject(new Error('token not found ' + JSON.stringify(httpResponse)));
-          } else{
-            reject(new Error('token found ' + JSON.stringify(httpResponse)));          
-          }
-        }
-      );
+        );
+      }
     })
   }
 

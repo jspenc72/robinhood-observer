@@ -3,15 +3,17 @@ var ON_DEATH = require('death');
 const cTable = require('console.table');
 
 program
-.command('quote <frequency> <symbol> [otherSymbols...]')
+.command('quote <symbol> [otherSymbols...]')
 .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-.action((frequency, symbol, otherSymbols) => {
+.option('-f --frequency <n>', 'Interval for Request Frequency (milliseconds)', parseInt)
+.action((symbol, otherSymbols) => {
   var Robinhood = require('../src')(null, function(){
 
     var symbols = [symbol]
     if (otherSymbols.length>0) {
       symbols = symbols.concat(otherSymbols)
     }
+    var frequency = (program.commands[0].frequency || 2000)
     var quotesSubscription = Robinhood.crypto.quotes.observe(symbols, frequency)
     .map(quote => {
       var parsed = {

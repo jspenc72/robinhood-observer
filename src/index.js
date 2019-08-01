@@ -820,6 +820,7 @@ if (require.main === module) {
   program
   .version(pckg.version)
   .command('crypto [query]', 'crypto')
+  .command('crypto [get]', 'crypto')
   .parse(process.argv);
 
 } else {

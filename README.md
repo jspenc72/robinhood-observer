@@ -59,21 +59,26 @@ Options:
 
 Commands:
   crypto [query]  crypto
+  crypto [get]    crypto
   help [cmd]      display help for [cmd]
 
 $ rh crypto -h
 Usage: rh-crypto [options] [command]
 
 Options:
-  -h, --help                                              output usage information
+  -h, --help                                        output usage information
 
 Commands:
-  quote [options] <frequency> <symbol> [otherSymbols...]
+  quote [options] <symbol> [otherSymbols...]
+  create <symbol> <type> <side> <quantity> <price>
+  cancel <orderId>
+
 $ rh crypto quote -h
-Usage: quote [options] <frequency> <symbol> [otherSymbols...]
+Usage: quote [options] <symbol> [otherSymbols...]
 
 Options:
   -o --output <output>  Output Format (table|json) (default: "table")
+  -f --frequency <n>    Request Frequency (milliseconds)
   -h, --help            output usage information
 ```
 
