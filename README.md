@@ -3,7 +3,7 @@
 [![Travis](https://img.shields.io/travis/jspenc72/robinhood-node/master.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
 [![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
-[![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer?activeTab=dependencies)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
 
 [![RxJS](http://reactivex.io/assets/Rx_Logo_S.png)](http://reactivex.io)
