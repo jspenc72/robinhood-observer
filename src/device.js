@@ -62,7 +62,6 @@ class Device {
     return id;
   }
 
-
   isCached() {
     try {
       return fs.existsSync(this.path)
