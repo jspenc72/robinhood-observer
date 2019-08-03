@@ -1,7 +1,6 @@
 <h1><img src="https://raw.githubusercontent.com/jspenc72/robinhood-node/master/.github/robinhood-node.png"/></h1>
 
 [![Travis](https://img.shields.io/travis/jspenc72/robinhood-node/master.svg)](https://www.npmjs.com/package/robinhood-observer)
-[![NodeJS](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://nodejs.org/en/)
 [![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
 [![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
