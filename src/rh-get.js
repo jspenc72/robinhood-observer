@@ -16,9 +16,9 @@ program
     .map(quote => quote.results)
     .distinct()                         //Only use distict results...
     .subscribe(x => {
-      switch (program.commands[1].output) {
+      switch (program.commands[0].output) {
         case 'table':
-          console.table(x.results)
+          console.table(x)
           break;
         case 'json':
           console.log(x)
