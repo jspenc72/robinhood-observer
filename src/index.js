@@ -176,9 +176,10 @@ function Robinhood(opts, callback) {
     * @return {[Observable]}             An observable which updates on the frequency provided.
     *
     */
-  api.observeQuote = function(symbol, frequency){
+
+    api.observeQuote = function(symbol, frequency){
    symbol = Array.isArray(symbol) ? symbol = symbol.join(',') : symbol;
-   frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
+   frequency = frequency ? frequency : 1800;         //Set frequency of updates to 800 by default
    var count = 0;
    var source = Rx.Observable.create(function (observer) {
      var intrvl = setInterval(function(){
@@ -232,7 +233,7 @@ function Robinhood(opts, callback) {
 
   api.observeCryptoQuote = function(symbol, frequency){
     
-    frequency = frequency ? frequency : 800;         //Set frequency of updates to 800 by default
+    frequency = frequency ? frequency : 1800;         //Set frequency of updates to 800 by default
     var count = 0;
     var source = Rx.Observable.create(function (observer) {
       var intrvl
