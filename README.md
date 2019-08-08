@@ -5,6 +5,7 @@
 [![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer?activeTab=dependencies)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer?ref=badge_shield)
 
 [![RxJS](http://reactivex.io/assets/Rx_Logo_S.png)](http://reactivex.io)
 [![Bluebird](http://bluebirdjs.com/img/logo.png)](http://bluebirdjs.com/)
@@ -1108,3 +1109,7 @@ Sanko ([@sanko](https://github.com/sanko/Robinhood))
 
 See @Sanko's [Unofficial Documentation](https://github.com/sanko/Robinhood) for more information.
 FYI [Robinhood's Terms and Conditions](https://brokerage-static.s3.amazonaws.com/assets/robinhood/legal/Robinhood%20Terms%20and%20Conditions.pdf)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer?ref=badge_large)
