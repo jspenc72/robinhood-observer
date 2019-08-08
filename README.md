@@ -21,8 +21,9 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 *   Reactive
 *   Comprehensive CLI
 *   Quote Stock Prices
-*   Crypto Quotes
-*   Buy, Sell Orders
+*   Crypto Quotes, Buy, Sell 
+*   Options Trading
+*   Buy, Sell Stock Equity Orders
 *   Daily Fundamentals
 *   Daily, Weekly, Monthly Historicals
 *   Callback and Promise Support (Bluebird)
@@ -58,7 +59,24 @@ Options:
 Commands:
   crypto [query]  crypto
   crypto [get]    crypto
+  get [quote]     get
   help [cmd]      display help for [cmd]
+
+$ rh get -h
+Usage: rh-get [options] [command]
+
+Options:
+  -h, --help                                  output usage information
+
+Commands:
+  quote [options] <symbol> [otherSymbols...]
+  account [options]
+  positions [options]
+  fundamentals [options] <symbol>
+  sp500up [options]
+  sp500down [options]
+  watchlists [options]
+  historicals [options] <symbol>
 
 $ rh crypto -h
 Usage: rh-crypto [options] [command]
@@ -85,7 +103,7 @@ Options:
 ```js
 $ export ROBINHOOD_USERNAME=username
 $ export ROBINHOOD_PASSWORD=password
-$ rh crypto quote 2000 BTC ETC -o table
+$ rh crypto quote BTC ETC -o table
 ask_price    bid_price    mark_price   high_price  low_price  open_price  symbol  id                                    volume         
 -----------  -----------  -----------  ----------  ---------  ----------  ------  ------------------------------------  ---------------
 9465.128771  9438.796832  9451.962801  10225.53    9301.11    10119.14    BTCUSD  3d961844-d360-45fc-989b-f6fca761d511  372157.369572  
