@@ -19,19 +19,19 @@ const Robinhood = require('../src')(credentials, () => {
     .map(quote => quote.results)
     .map((results) => {
       const obj = results[0];
-      for (const key in obj) {
+      Object.keys(obj).forEach((key) => {
         const value = obj[key];
         obj[key] = (key.includes('price') || key.includes('volume')) ? parseFloat(value) : value;
-      }
+      });
       return obj;
     })
     .distinct() // Only use distict results...
     .subscribe((x) => {
     // Do something each time the price changes
-      const mid_price = (x.high_price - ((x.high_price - x.low_price) / 2));
+      const midPrice = (x.high_price - ((x.high_price - x.low_price) / 2));
       console.log(new Date(), '-');
-      console.log(x, mid_price);
-      if (x.mark_price < mid_price) {
+      console.log(x, midPrice);
+      if (x.mark_price < midPrice) {
         if (BUY_COUNT < BUY_COUNT_LIMIT) {
           console.log('buy!');
         } else {
@@ -48,12 +48,12 @@ const Robinhood = require('../src')(credentials, () => {
     .map(quote => quote.results)
     .map((results) => {
       const obj = results[0];
-      for (const key in obj) {
+      Object.keys(obj).forEach((key) => {
         const value = obj[key];
         const nan = Number.isNaN(Number.parseFloat(value));
         console.log(nan);
         obj[key] = ((key.includes('id')) || (key.includes('updated_at'))) ? value : parseFloat(value);
-      }
+      });
       return obj;
     })
     .distinct() // Only use distict results...

@@ -26,10 +26,10 @@ const Robinhood = require('../src')(credentials, () => {
     .map(quote => quote.results)
     .map((results) => {
       const obj = results[0];
-      for (const key in obj) {
+      Object.keys(obj).forEach((key) => {
         const value = obj[key];
         obj[key] = (key.includes('price') || key.includes('volume')) ? parseFloat(value) : value;
-      }
+      });
       return obj;
     })
     .distinct() // Only use distict results...
