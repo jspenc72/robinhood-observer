@@ -1,3 +1,4 @@
+/* eslint-disable */
 var RxJS = require('rxjs'),
     Rx = require('rx'),
     Promise = require("bluebird"),
@@ -13,6 +14,7 @@ var _apiUrl = 'https://api.robinhood.com/';
 var _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS'
 
 class Auth {
+  
   headers = headers
   _request = request.defaults()
   _rp = rp.defaults()

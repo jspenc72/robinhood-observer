@@ -1,0 +1,13 @@
+node_modules
+coverage
+npm-debug.log
+device_token.txt
+device.json
+
+src/auth.js
+src/device.js
+src/index.js
+src/crypto/index.js
+src/crypto/orders.js
+src/crypto/portfolios.js
+src/crypto/quotes.js
