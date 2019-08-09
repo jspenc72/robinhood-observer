@@ -454,7 +454,7 @@ function Robinhood(opts, callback) {
   api.userEmployment = function(callback){
     var tUri = _apiUrl,
         tOpts = {
-      uri: _apiUrl + endpoints.additional_info
+      uri: _apiUrl + endpoints.user_employment
     };
     return auth.get(tOpts, callback)
   };
