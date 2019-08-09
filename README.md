@@ -6,6 +6,8 @@
 [![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://nodejs.org/en/)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer?activeTab=dependencies)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![codecov](https://codecov.io/gh/jspenc72/robinhood-observer/branch/master/graph/badge.svg)](https://codecov.io/gh/jspenc72/robinhood-observer)
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjspenc72%2Frobinhood-observer?ref=badge_shield)
 
 <!-- [![npm](https://img.shields.io/npm/dt/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer) -->
