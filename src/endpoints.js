@@ -23,7 +23,7 @@ module.exports = {
     document_requests: 'upload/document_requests/',
     user: 'user/',
 
-    user_additional_in  : "user/additional_info/",
+    user_additional_info  : "user/additional_info/",
     user_basic_info: "user/basic_info/",
     user_employment: "user/employment/",
     user_investment_profile: "user/investment_profile/",
