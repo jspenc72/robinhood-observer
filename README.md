@@ -1,10 +1,9 @@
 <h1><img src="https://raw.githubusercontent.com/jspenc72/robinhood-node/master/.github/robinhood-node.png"/></h1>
 
 [![Travis](https://img.shields.io/travis/jspenc72/robinhood-node/master.svg)](https://travis-ci.org/jspenc72/robinhood-node)
-[![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
+[![npm](https://img.shields.io/npm/dt/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![npm](https://img.shields.io/npm/dw/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![npm](https://img.shields.io/npm/dm/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
-[![npm](https://img.shields.io/npm/dd/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer)
 [![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://nodejs.org/en/)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer?activeTab=dependencies)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
