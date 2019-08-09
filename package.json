@@ -1,10 +1,11 @@
 {
   "name": "robinhood-observer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Comprehensive client featuring RxJS Streams and CLI for Robinhood Free Stock Trading",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha test --recursive"
+    "test": "mocha test --recursive",
+    "pretest": "eslint --ignore-path .gitignore ."
   },
   "repository": {
     "type": "git",
@@ -63,11 +64,13 @@
     "stringstream": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "^3.1.0",
-    "should": "^4.3.0",
     "ava": "^0.17.0",
     "coveralls": "^2.11.15",
-    "nyc": "^10.0.0"
+    "eslint": "^6.1.0",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^3.1.0",
+    "nyc": "^10.0.0",
+    "should": "^4.3.0"
   },
   "files": [
     "src/crypto/*",
