@@ -1,8 +1,8 @@
 <h1><img src="https://raw.githubusercontent.com/jspenc72/robinhood-node/master/.github/robinhood-node.png"/></h1>
 
-[![Travis](https://img.shields.io/travis/jspenc72/robinhood-node/master.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![Travis](https://img.shields.io/travis/jspenc72/robinhood-node/master.svg)](https://travis-ci.org/jspenc72/robinhood-node)
 [![npm](https://img.shields.io/npm/dt/robinhood-observer.svg?maxAge=2592000)](https://www.npmjs.com/package/robinhood-observer)
-[![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://www.npmjs.com/package/robinhood-observer)
+[![NodeJS](https://img.shields.io/badge/node-12.4.0-brightgreen.svg)](https://nodejs.org/en/)
 [![Dependencies](https://david-dm.org/jspenc72/robinhood-observer.svg)](https://www.npmjs.com/package/robinhood-observer?activeTab=dependencies)
 [![Codecov](https://img.shields.io/codecov/c/github/jspenc72/robinhood-observer/master.svg)](https://www.npmjs.com/package/robinhood-observer)
 
@@ -15,7 +15,6 @@
 A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 
 [![NPM](https://nodei.co/npm/robinhood-observer.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/robinhood-observer/)
-[![NPM](https://nodei.co/npm-dl/robinhood-observer.png?months=3&height=3)](https://nodei.co/npm/robinhood-observer/)
 
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
