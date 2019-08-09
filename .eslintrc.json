@@ -1,1 +1,10 @@
-{"extends": "airbnb"}
+{
+    "extends": "airbnb",
+    "env": {
+        "jest": true
+    },    
+    "rules": {
+        "max-len": ["error", { "code": 250 }],
+        "no-console": 0
+    }
+}

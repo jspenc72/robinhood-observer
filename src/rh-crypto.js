@@ -1,13 +1,16 @@
 const program = require('commander');
 const ON_DEATH = require('death');
+/* eslint-disable no-unused-vars */
 const cTable = require('console.table');
+/* eslint-enable no-unused-vars */
+const src = require('../src');
 
 program
   .command('quote <symbol> [otherSymbols...]')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .option('-f --frequency <n>', 'Interval for Request Frequency (milliseconds)', parseInt)
   .action((symbol, otherSymbols) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       let symbols = [symbol];
       if (otherSymbols.length > 0) {
         symbols = symbols.concat(otherSymbols);
@@ -19,12 +22,13 @@ program
             results: [],
             quote,
           };
-          quote.results.forEach((quote, index) => {
-            for (const key in quote) {
-              const value = quote[key];
-              quote[key] = (key.includes('price') || key.includes('volume')) ? parseFloat(value) : value;
-            }
-            parsed.results.push(quote);
+          quote.results.forEach((_quote) => {
+            const q = _quote;
+            Object.keys(q).forEach((key) => {
+              const value = q[key];
+              q[key] = (key.includes('price') || key.includes('volume')) ? parseFloat(value) : value;
+            });
+            parsed.results.push(q);
           });
           return parsed;
         })
@@ -64,15 +68,7 @@ program
   .command('create <symbol> <type> <side> <quantity> <price>')
   .action((symbol, type, side, quantity, price) => {
     console.log(symbol, type, side, quantity, price);
-    var Robinhood = require('../src')(null, () => {
-    // var createOrder = {
-      //   type: 'limit',
-      //   side: "buy",
-      //   quantity: "1.000",
-      //   price: 7.80,
-      //   time_in_force: "gtc"
-      // }
-
+    const Robinhood = src(null, () => {
       const createOrder = {
         type,
         side,
@@ -99,7 +95,7 @@ program
   .command('cancel <orderId>')
   .action((orderId) => {
     console.log(orderId);
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.crypto.orders.cancel(orderId)
         .then((success) => {
           console.log('after create()', success);

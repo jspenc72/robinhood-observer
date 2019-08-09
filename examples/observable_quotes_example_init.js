@@ -11,7 +11,7 @@ if (process.env.ROBINHOOD_USERNAME) {
   };
 }
 
-var Robinhood = require('../src')(credentials, () => {
+const Robinhood = require('../src')(credentials, () => {
   const subscription = Robinhood.observeQuote(['TVIX', 'AAPL', 'GOOG'])
     .map(quote => quote.results)
     .distinct() // Only use distict results...

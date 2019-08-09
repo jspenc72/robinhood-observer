@@ -4,6 +4,7 @@ const Robinhood = require('../src');
 const TEST_SYMBOL = 'GOOG';
 const TEST_SYMBOLS = ['GOOG', 'AAPL'];
 
+
 describe('Robinhood', () => {
   it(`Should observe quotes for ${TEST_SYMBOLS}`, (done) => {
     let count = 0;
@@ -11,7 +12,7 @@ describe('Robinhood', () => {
     const subscription = obs
       .map(quote => quote.results)
       .subscribe((x) => {
-        count++;
+        count += 1;
         should(x[0].symbol).be.equal(TEST_SYMBOLS[0]);
         should(x[1].symbol).be.equal(TEST_SYMBOLS[1]);
         should(count).be.greaterThan(0);
@@ -34,7 +35,7 @@ describe('Robinhood', () => {
     const subscription = obs
       .map(quote => quote.results)
       .subscribe((x) => {
-        count++;
+        count += 1;
         should(x[0].symbol).be.equal(TEST_SYMBOLS[0]);
         should(count).be.greaterThan(0);
       }, (e) => {
@@ -51,13 +52,12 @@ describe('Robinhood', () => {
   });
 
   it('Should not observe orders without credentials.', (done) => {
-    const count = 0;
     const obs = Robinhood(null).observeOrders(500);
     const subscription = obs
       .subscribe((x) => {
         done(x);
       }, (e) => {
-        if (e.detail == 'Invalid token.') {
+        if (e.detail === 'Invalid token.') {
           done();
         }
       }, () => console.log('disposed'));
@@ -469,6 +469,7 @@ describe('Robinhood', () => {
         done(success);
       })
       .catch((err) => {
+        console.error(err);
         done();
       });
   });
@@ -655,10 +656,10 @@ describe('Robinhood', () => {
   it('Should get splits - promise', (done) => {
     // First Get Quote
     Robinhood(null).instruments(TEST_SYMBOL)
-      .then((success) => {
-        Robinhood(null).splits(success.results[0].url.split('/instruments/')[1])
-          .then((success) => {
-            should(success).have.property('results');
+      .then((instrumentsSuccess) => {
+        Robinhood(null).splits(instrumentsSuccess.results[0].url.split('/instruments/')[1])
+          .then((splitsSuccess) => {
+            should(splitsSuccess).have.property('results');
             done();
           })
           .catch((err) => {

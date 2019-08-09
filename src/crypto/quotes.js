@@ -1,6 +1,6 @@
 const Rx = require('rx');
 const _ = require('lodash');
-let config = require('../config');
+const config = require('../config');
 const endpoints = require('../endpoints');
 
 class Quotes {
@@ -35,7 +35,6 @@ class Quotes {
   }
 
   get(symbol, callback) {
-
     symbol = Array.isArray(symbol) ? symbol : [symbol];
     const filtered = _.filter(this.pairs, o => (symbol.indexOf(o.symbol) > -1) || (symbol.indexOf(o.symbol.split('-')[0]) > -1));
     const indexed = _.map(filtered, (o) => {
@@ -45,7 +44,7 @@ class Quotes {
     });
     const sorted = _.sortBy(indexed, ['index']);
     const targets = _.map(sorted, item => item.id).join(',');
-    let tOpts = {
+    const tOpts = {
       uri: config.api_url + endpoints.marketdata_forex_quotes,
       qs: { ids: targets },
     };

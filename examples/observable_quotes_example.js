@@ -1,7 +1,7 @@
 let credentials;
 
 if (process.env.ROBINHOOD_USERNAME) {
-  // No need to store credentials in file or code, robinhood_observer will check for env vars if none are provided
+  // No need to store credentials in file or code, robinhood_observer will check for env lets if none are provided
   // See docker-compose starter https://github.com/jspenc72/robinhood-observer-starter
   credentials = null;
 } else {
@@ -11,7 +11,7 @@ if (process.env.ROBINHOOD_USERNAME) {
   };
 }
 
-var Robinhood = require('../src')(credentials, () => {
+const Robinhood = require('../src')(credentials, () => {
   const subscription = Robinhood.observeQuote(['TVIX', 'AAPL', 'GOOG'])
     .map(quote => quote.results)
     .distinct() // Only use distict results...

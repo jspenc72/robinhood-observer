@@ -11,9 +11,9 @@ if (process.env.ROBINHOOD_USERNAME) {
   };
 }
 
-var Robinhood = require('../src')(credentials, () => {
-  const response = Robinhood.crypto_init()
-    .then(success => Robinhood.crypto_quote(['OMG', 'BTC', 'XRP', 'BTC-USD']))
+const Robinhood = require('../src')(credentials, () => {
+  Robinhood.crypto_init()
+    .then(() => Robinhood.crypto_quote(['OMG', 'BTC', 'XRP', 'BTC-USD']))
     .then((success) => {
       console.log(success);
     })

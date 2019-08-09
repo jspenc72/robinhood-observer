@@ -1,11 +1,12 @@
 const program = require('commander');
+const src = require('../src');
 
 program
   .command('quote <symbol> [otherSymbols...]')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .option('-f --frequency <n>', 'Interval for Request Frequency (milliseconds)', parseInt)
   .action((symbol, otherSymbols) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       let symbols = [symbol];
       if (otherSymbols.length > 0) {
         symbols = symbols.concat(otherSymbols);
@@ -17,12 +18,13 @@ program
             results: [],
             quote,
           };
-          quote.results.forEach((quote, index) => {
-            for (const key in quote) {
-              const value = quote[key];
-              quote[key] = ((key.includes('price') && !key.includes('source')) || key.includes('volume') || key.includes('close')) ? parseFloat(value) : value;
-            }
-            parsed.results.push(quote);
+          quote.results.forEach((_quote) => {
+            const q = _quote;
+            Object.keys(q).forEach((key) => {
+              const value = q[key];
+              q[key] = ((key.includes('price') && !key.includes('source')) || key.includes('volume') || key.includes('close')) ? parseFloat(value) : value;
+            });
+            parsed.results.push(q);
           });
           return parsed;
         })
@@ -51,8 +53,8 @@ program
 program
   .command('account')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol, otherSymbols) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.accounts()
         .then((x) => {
           switch (program.commands[1].output) {
@@ -76,8 +78,8 @@ program
 program
   .command('positions')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol, otherSymbols) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.positions()
         .then((x) => {
           switch (program.commands[2].output) {
@@ -102,7 +104,7 @@ program
   .command('fundamentals <symbol>')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.fundamentals(symbol)
         .then((x) => {
           switch (program.commands[3].output) {
@@ -127,7 +129,7 @@ program
   .command('sp500up')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action(() => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.sp500_up()
         .then((x) => {
           switch (program.commands[4].output) {
@@ -152,7 +154,7 @@ program
   .command('sp500down')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action(() => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.sp500_down()
         .then((x) => {
           switch (program.commands[5].output) {
@@ -177,7 +179,7 @@ program
   .command('watchlists')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action(() => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.watchlists()
         .then((x) => {
           switch (program.commands[6].output) {
@@ -202,11 +204,11 @@ program
   .command('historicals <symbol>')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       const intv = '15second';
       const span = 'hour';
       const bounds = '24_7';
-      Robinhood.historicals(symbol, intv, span)
+      Robinhood.historicals(symbol, intv, span, bounds)
         .then((x) => {
           switch (program.commands[7].output) {
             case 'table':
@@ -231,7 +233,7 @@ program
   .command('instruments <symbol>')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.instruments(symbol)
         .then((x) => {
           switch (program.commands[8].output) {
@@ -255,8 +257,8 @@ program
 program
   .command('profile')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.investment_profile()
         .then((x) => {
           switch (program.commands[9].output) {
@@ -280,8 +282,8 @@ program
 program
   .command('user')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.user()
         .then((x) => {
           switch (program.commands[10].output) {
@@ -305,8 +307,8 @@ program
 program
   .command('userBasicInfo')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.userBasicInfo()
         .then((x) => {
           switch (program.commands[11].output) {
@@ -331,8 +333,8 @@ program
 program
   .command('userAdditionalInfo')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.userAdditionalInfo()
         .then((x) => {
           switch (program.commands[12].output) {
@@ -356,8 +358,8 @@ program
 program
   .command('userEmployment')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.userEmployment()
         .then((x) => {
           switch (program.commands[13].output) {
@@ -381,8 +383,8 @@ program
 program
   .command('userInvestmentProfile')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.userInvestmentProfile()
         .then((x) => {
           switch (program.commands[14].output) {
@@ -406,8 +408,8 @@ program
 program
   .command('dividends')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.dividends()
         .then((x) => {
           switch (program.commands[15].output) {
@@ -431,8 +433,8 @@ program
 program
   .command('orders')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+  .action(() => {
+    const Robinhood = src(null, () => {
       Robinhood.orders()
         .then((x) => {
           switch (program.commands[16].output) {
@@ -457,7 +459,7 @@ program
   .command('news <symbol>')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
   .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
+    const Robinhood = src(null, () => {
       Robinhood.news(symbol)
         .then((x) => {
           switch (program.commands[17].output) {
@@ -481,9 +483,9 @@ program
 program
   .command('markets')
   .option('-o --output <output>', 'Output Format (table|json)', /^(table|json)$/i, 'table')
-  .action((symbol) => {
-    var Robinhood = require('../src')(null, () => {
-      Robinhood.markets(symbol)
+  .action(() => {
+    const Robinhood = src(null, () => {
+      Robinhood.markets()
         .then((x) => {
           switch (program.commands[18].output) {
             case 'table':

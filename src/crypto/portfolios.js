@@ -1,8 +1,7 @@
 const Rx = require('rx');
 const _ = require('lodash');
-var config = require('../config');
+const config = require('../config');
 const Auth = require('../auth.js');
-var config = require('../config');
 const endpoints = require('../endpoints');
 
 class Portfolios {
