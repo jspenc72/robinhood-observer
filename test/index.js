@@ -1,729 +1,724 @@
-var should = require('should');
-var Robinhood = require('../src');
+const should = require('should');
+const Robinhood = require('../src');
 
-var TEST_SYMBOL = 'GOOG';
-var TEST_SYMBOLS = ['GOOG', 'AAPL'];
+const TEST_SYMBOL = 'GOOG';
+const TEST_SYMBOLS = ['GOOG', 'AAPL'];
 
-describe('Robinhood', function() {
-  it('Should observe quotes for ' + TEST_SYMBOLS + '', function(done) {
-    var count = 0;
-      var obs = Robinhood(null).observeQuote(TEST_SYMBOLS,500)
-      var subscription = obs
+describe('Robinhood', () => {
+  it(`Should observe quotes for ${TEST_SYMBOLS}`, (done) => {
+    let count = 0;
+    const obs = Robinhood(null).observeQuote(TEST_SYMBOLS, 500);
+    const subscription = obs
       .map(quote => quote.results)
-      .subscribe(x => {
+      .subscribe((x) => {
         count++;
         should(x[0].symbol).be.equal(TEST_SYMBOLS[0]);
         should(x[1].symbol).be.equal(TEST_SYMBOLS[1]);
         should(count).be.greaterThan(0);
-      }, e => {
+      }, (e) => {
         done(e);
-        return;
-      }, () => console.log("disposed"));
+      }, () => console.log('disposed'));
 
-      setTimeout(function(){
-        //Unsubscribe
-        should(subscription.isStopped).be.equal(false);
-        subscription.dispose();
-        should(subscription.isStopped).be.equal(true);
-        done()
-      }, 1500);
+    setTimeout(() => {
+      // Unsubscribe
+      should(subscription.isStopped).be.equal(false);
+      subscription.dispose();
+      should(subscription.isStopped).be.equal(true);
+      done();
+    }, 1500);
   });
 
-  it('Should observe quotes for ' + TEST_SYMBOL + '', function(done) {
-    var count = 0;
-      var obs = Robinhood(null).observeQuote(TEST_SYMBOL,500)
-      var subscription = obs
+  it(`Should observe quotes for ${TEST_SYMBOL}`, (done) => {
+    let count = 0;
+    const obs = Robinhood(null).observeQuote(TEST_SYMBOL, 500);
+    const subscription = obs
       .map(quote => quote.results)
-      .subscribe(x => {
+      .subscribe((x) => {
         count++;
         should(x[0].symbol).be.equal(TEST_SYMBOLS[0]);
         should(count).be.greaterThan(0);
-      }, e => {
+      }, (e) => {
         done(e);
-        return;
-      }, () => console.log("disposed"));
+      }, () => console.log('disposed'));
 
-      setTimeout(function(){
-        //Unsubscribe
-        should(subscription.isStopped).be.equal(false);
-        subscription.dispose();
-        should(subscription.isStopped).be.equal(true);
-        done()
-      }, 1500);
+    setTimeout(() => {
+      // Unsubscribe
+      should(subscription.isStopped).be.equal(false);
+      subscription.dispose();
+      should(subscription.isStopped).be.equal(true);
+      done();
+    }, 1500);
   });
 
-  it('Should not observe orders without credentials.', function(done) {
-    var count = 0;
-      var obs = Robinhood(null).observeOrders(500)
-      var subscription = obs
-      .subscribe(x => {
+  it('Should not observe orders without credentials.', (done) => {
+    const count = 0;
+    const obs = Robinhood(null).observeOrders(500);
+    const subscription = obs
+      .subscribe((x) => {
         done(x);
-      }, e => {
-        if(e.detail=="Invalid token."){
+      }, (e) => {
+        if (e.detail == 'Invalid token.') {
           done();
         }
+      }, () => console.log('disposed'));
+
+    setTimeout(() => {
+      // Unsubscribe
+      should(subscription.isStopped).be.equal(true);
+      subscription.dispose();
+      done();
+    }, 1500);
+  });
+
+  it('Should not get basic user info without credentials - callback', (done) => {
+    Robinhood(null).userBasicInfo((err, response, body) => {
+      if (err) {
+        done(err);
         return;
-      }, () => console.log("disposed"));
-
-      setTimeout(function(){
-        //Unsubscribe
-        should(subscription.isStopped).be.equal(true);
-        subscription.dispose();
-        done()
-      }, 1500);
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-  it('Should not get basic user info without credentials - callback', function(done) {
-      Robinhood(null).userBasicInfo(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get basic user info without credentials - promise', (done) => {
+    Robinhood(null).userBasicInfo()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get basic user info without credentials - promise', function(done) {
-      Robinhood(null).userBasicInfo()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+  it('Should not get additional user info without credentials - callback', (done) => {
+    Robinhood(null).userAdditionalInfo((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-  it('Should not get additional user info without credentials - callback', function(done) {
-      Robinhood(null).userAdditionalInfo(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get additional user info without credentials - promise', (done) => {
+    Robinhood(null).userAdditionalInfo()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get additional user info without credentials - promise', function(done) {
-      Robinhood(null).userAdditionalInfo()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+  it('Should not get user investment profile without credentials - callback', (done) => {
+    Robinhood(null).userInvestmentProfile((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-  it('Should not get user investment profile without credentials - callback', function(done) {
-      Robinhood(null).userInvestmentProfile(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get user investment profile without credentials - promise', (done) => {
+    Robinhood(null).userInvestmentProfile()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get user investment profile without credentials - promise', function(done) {
-      Robinhood(null).userInvestmentProfile()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+
+  it('Should not get investment profile without credentials - callback', (done) => {
+    Robinhood(null).investment_profile((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-
-  it('Should not get investment profile without credentials - callback', function(done) {
-      Robinhood(null).investment_profile(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get investment profile without credentials - promise', (done) => {
+    Robinhood(null).investment_profile()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get investment profile without credentials - promise', function(done) {
-      Robinhood(null).investment_profile()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+  it(`Should get fundamentals with a callback for ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).fundamentals(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
   });
 
-  it('Should get fundamentals with a callback for '+TEST_SYMBOL, function(done) {
-      Robinhood(null).fundamentals(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
-      });
-  });
-
-  it('Should get fundamentals with a promise for '+TEST_SYMBOL, function(done) {
-      Robinhood(null).fundamentals(TEST_SYMBOL)
-      .then(success => {
+  it(`Should get fundamentals with a promise for ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).fundamentals(TEST_SYMBOL)
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err =>{
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should get fundamentals with a callback for Array '+TEST_SYMBOLS, function(done) {
-      Robinhood(null).fundamentals(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
       });
   });
 
-  it('Should get fundamentals with a promise for Array '+TEST_SYMBOLS, function(done) {
-      Robinhood(null).fundamentals(TEST_SYMBOL)
-      .then(success => {
+  it(`Should get fundamentals with a callback for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).fundamentals(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
+  });
+
+  it(`Should get fundamentals with a promise for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).fundamentals(TEST_SYMBOL)
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err =>{
+      .catch((err) => {
         done(err);
-      })
+      });
   });
 
-  it('Should get instruments with a promise for Array '+TEST_SYMBOLS, function(done) {
-      Robinhood(null).instruments(TEST_SYMBOLS)
-      .then(success => {
+  it(`Should get instruments with a promise for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).instruments(TEST_SYMBOLS)
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err =>{
+      .catch((err) => {
         done(err);
-      })
+      });
   });
 
-  it('Should get instruments with a promise for symbol '+TEST_SYMBOL, function(done) {
-      Robinhood(null).instruments(TEST_SYMBOL)
-      .then(success => {
+  it(`Should get instruments with a promise for symbol ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).instruments(TEST_SYMBOL)
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err =>{
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should get instruments with a callback for Array '+TEST_SYMBOLS, function(done) {
-      Robinhood(null).instruments(TEST_SYMBOLS, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
       });
   });
 
-  it('Should get instruments with a callback for symbol '+TEST_SYMBOL, function(done) {
-      Robinhood(null).instruments(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
-      });
+  it(`Should get instruments with a callback for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).instruments(TEST_SYMBOLS, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
   });
 
-  it('Should handle callback when getting quotes with .quote_data() for Array ' + TEST_SYMBOLS, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOLS, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
-          should(body.results[1].symbol).be.equal(TEST_SYMBOLS[1]);
-          done();
-      });
+  it(`Should get instruments with a callback for symbol ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).instruments(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
   });
 
-  it('Should handle callback when getting quotes with .quote_data() for symbol: ' + TEST_SYMBOL, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results[0].symbol).be.equal(TEST_SYMBOL);
-          done();
-      });
+  it(`Should handle callback when getting quotes with .quote_data() for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOLS, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
+      should(body.results[1].symbol).be.equal(TEST_SYMBOLS[1]);
+      done();
+    });
+  });
+
+  it(`Should handle callback when getting quotes with .quote_data() for symbol: ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results[0].symbol).be.equal(TEST_SYMBOL);
+      done();
+    });
   });
 
 
-  it('Should handle callback when getting quotes for Array ' + TEST_SYMBOLS, function(done) {
-      Robinhood(null).quote(TEST_SYMBOLS, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
-          should(body.results[1].symbol).be.equal(TEST_SYMBOLS[1]);
-          done();
-      });
+  it(`Should handle callback when getting quotes for Array ${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).quote(TEST_SYMBOLS, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
+      should(body.results[1].symbol).be.equal(TEST_SYMBOLS[1]);
+      done();
+    });
   });
 
-  it('Should handle callback when getting quotes for symbol: ' + TEST_SYMBOL, function(done) {
-      Robinhood(null).quote(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results[0].symbol).be.equal(TEST_SYMBOL);
-          done();
-      });
+  it(`Should handle callback when getting quotes for symbol: ${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).quote(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results[0].symbol).be.equal(TEST_SYMBOL);
+      done();
+    });
   });
 
-  it('Should return promise when getting quotes with .quote_data() without callback for Array:' + TEST_SYMBOLS, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOLS)
-      .then(success => {
+  it(`Should return promise when getting quotes with .quote_data() without callback for Array:${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOLS)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
         done();
       });
   });
 
-  it('Should return promise when getting quotes with .quote_data()  without callback for symbol:' + TEST_SYMBOL, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOL)
-      .then(success => {
+  it(`Should return promise when getting quotes with .quote_data()  without callback for symbol:${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOL)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOL);
         done();
       });
   });
 
 
-  it('Should return promise when getting quotes with .quote_data() without callback for Array:' + TEST_SYMBOLS, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOLS)
-      .then(success => {
+  it(`Should return promise when getting quotes with .quote_data() without callback for Array:${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOLS)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
         done();
       });
   });
 
-  it('Should return promise when getting quotes with .quote_data() without callback for symbol:' + TEST_SYMBOL, function(done) {
-      Robinhood(null).quote_data(TEST_SYMBOL)
-      .then(success => {
+  it(`Should return promise when getting quotes with .quote_data() without callback for symbol:${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).quote_data(TEST_SYMBOL)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOL);
         done();
       });
   });
 
-  it('Should return promise when getting quotes without callback for Array:' + TEST_SYMBOLS, function(done) {
-      Robinhood(null).quote(TEST_SYMBOLS)
-      .then(success => {
+  it(`Should return promise when getting quotes without callback for Array:${TEST_SYMBOLS}`, (done) => {
+    Robinhood(null).quote(TEST_SYMBOLS)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOLS[0]);
         done();
       });
   });
 
-  it('Should return promise when getting quotes without callback for symbol:' + TEST_SYMBOL, function(done) {
-      Robinhood(null).quote(TEST_SYMBOL)
-      .then(success => {
+  it(`Should return promise when getting quotes without callback for symbol:${TEST_SYMBOL}`, (done) => {
+    Robinhood(null).quote(TEST_SYMBOL)
+      .then((success) => {
         should(success.results[0].symbol).be.equal(TEST_SYMBOL);
         done();
       });
   });
 
-  it('Should not get accounts without credentials - callback', function(done) {
-      Robinhood(null).accounts(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get accounts without credentials - callback', (done) => {
+    Robinhood(null).accounts((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
+  });
+
+  it('Should not get accounts without credentials - promise', (done) => {
+    Robinhood(null).accounts()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get accounts without credentials - promise', function(done) {
-      Robinhood(null).accounts()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+  it('Should not get user without credentials - callback', (done) => {
+    Robinhood(null).user((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Not found.');
+      done();
+    });
   });
 
-  it('Should not get user without credentials - callback', function(done) {
-      Robinhood(null).user(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Not found.");
-          done();
+  it('Should not get user without credentials - promise', (done) => {
+    Robinhood(null).user()
+      .then((success) => {
+        should(success.detail).be.equal('Not found.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Not found.');
+        done();
       });
   });
 
-  it('Should not get user without credentials - promise', function(done) {
-      Robinhood(null).user()
-      .then(success => {
-        should(success.detail).be.equal("Not found.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Not found.");
-        done();
-      })
+  it('Should not get dividends without credentials - callback', (done) => {
+    Robinhood(null).dividends((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-  it('Should not get dividends without credentials - callback', function(done) {
-      Robinhood(null).dividends(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get dividends without credentials - promise', (done) => {
+    Robinhood(null).dividends()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get dividends without credentials - promise', function(done) {
-      Robinhood(null).dividends()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done();
-      })
+  it('Should not get orders without credentials - callback', (done) => {
+    Robinhood(null).orders((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
-  it('Should not get orders without credentials - callback', function(done) {
-      Robinhood(null).orders(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
+  it('Should not get orders without credentials - promise', (done) => {
+    Robinhood(null).orders()
+      .then((success) => {
+        should(success.detail).be.equal('Authentication credentials were not provided.');
+        done();
+      })
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should not get orders without credentials - promise', function(done) {
-      Robinhood(null).orders()
-      .then(success => {
-        should(success.detail).be.equal("Authentication credentials were not provided.");
+  it('Should not send cancel orders request with cancel_order() without order parameter - callback', (done) => {
+    Robinhood(null).cancel_order((err, response, body) => {
+      if (err) {
         done();
-      })
-      .catch(err => {
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
+  });
+
+  it('Should not send cancel orders request with cancel() without order parameter - callback', (done) => {
+    Robinhood(null).cancel((err, response, body) => {
+      if (err) {
         done();
-      })
-  });
-
-  it('Should not send cancel orders request with cancel_order() without order parameter - callback', function(done) {
-      Robinhood(null).cancel_order(function(err, response, body) {
-          if(err) {
-              done();
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
-      });
-  });
-
-  it('Should not send cancel orders request with cancel() without order parameter - callback', function(done) {
-      Robinhood(null).cancel(function(err, response, body) {
-          if(err) {
-              done();
-              return;
-          }
-          should(body.detail).be.equal("Authentication credentials were not provided.");
-          done();
-      });
+        return;
+      }
+      should(body.detail).be.equal('Authentication credentials were not provided.');
+      done();
+    });
   });
 
 
-  it('Should not send cancel orders request without order parameter - promise', function(done) {
-      Robinhood(null).cancel_order()
-      .then(success => {
+  it('Should not send cancel orders request without order parameter - promise', (done) => {
+    Robinhood(null).cancel_order()
+      .then((success) => {
         done(success);
       })
-      .catch(err => {
+      .catch((err) => {
         done();
-      })
-  });
-
-
-  it('Should not get positions without credentials - callback', function(done) {
-      Robinhood(null).positions(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body).have.property('detail');
-          done();
       });
   });
 
-  it('Should not get positions without credentials - promise', function(done) {
-      Robinhood(null).positions()
-      .then(success => {
+
+  it('Should not get positions without credentials - callback', (done) => {
+    Robinhood(null).positions((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body).have.property('detail');
+      done();
+    });
+  });
+
+  it('Should not get positions without credentials - promise', (done) => {
+    Robinhood(null).positions()
+      .then((success) => {
         should(success).have.property('detail');
         done();
       })
-      .catch(err => {
-
-        should(err.error.detail).be.equal("Authentication credentials were not provided.");
-        done()
-      })
-  });
-
-  it('Should get news about ' + TEST_SYMBOL +' - callback', function(done) {
-      Robinhood(null).news(TEST_SYMBOL, function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
+      .catch((err) => {
+        should(err.error.detail).be.equal('Authentication credentials were not provided.');
+        done();
       });
   });
 
-  it('Should get news about ' + TEST_SYMBOL +' - promise', function(done) {
-      Robinhood(null).news(TEST_SYMBOL)
-      .then(success => {
+  it(`Should get news about ${TEST_SYMBOL} - callback`, (done) => {
+    Robinhood(null).news(TEST_SYMBOL, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
+  });
+
+  it(`Should get news about ${TEST_SYMBOL} - promise`, (done) => {
+    Robinhood(null).news(TEST_SYMBOL)
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should get markets - callback', function(done) {
-      Robinhood(null).markets(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
       });
   });
 
-  it('Should get markets - promise', function(done) {
-      Robinhood(null).markets()
-      .then(success => {
+  it('Should get markets - callback', (done) => {
+    Robinhood(null).markets((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
+  });
+
+  it('Should get markets - promise', (done) => {
+    Robinhood(null).markets()
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should get data for the SP500 index up - callback', function(done) {
-      Robinhood(null).sp500_up(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body.results.length).be.above(0);
-          done();
       });
   });
 
-  it('Should get data for the SP500 index up - promise', function(done) {
-      Robinhood(null).sp500_up()
-      .then(success => {
+  it('Should get data for the SP500 index up - callback', (done) => {
+    Robinhood(null).sp500_up((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body.results.length).be.above(0);
+      done();
+    });
+  });
+
+  it('Should get data for the SP500 index up - promise', (done) => {
+    Robinhood(null).sp500_up()
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should get data for the SP500 index down', function(done) {
-      Robinhood(null).sp500_down(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-
-          should(body.results.length).be.above(0);
-
-          done();
       });
   });
 
-  it('Should get data for the SP500 index down - promise', function(done) {
-      Robinhood(null).sp500_down()
-      .then(success => {
+  it('Should get data for the SP500 index down', (done) => {
+    Robinhood(null).sp500_down((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      should(body.results.length).be.above(0);
+
+      done();
+    });
+  });
+
+  it('Should get data for the SP500 index down - promise', (done) => {
+    Robinhood(null).sp500_down()
+      .then((success) => {
         should(success.results.length).be.above(0);
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-  });
-
-  it('Should not create watch list without credentials - callback', function(done) {
-      Robinhood(null).create_watch_list({},function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body).have.property('detail');
-          done();
       });
   });
 
-  it('Should not create watch list without credentials - promise', function(done) {
-      Robinhood(null).create_watch_list({},function(err, response, body) {
-          if(err) {
-              console.log(err)
-              done(err);
-              return;
-          }
-          should(body).have.property('detail');
-          done();
-      });
+  it('Should not create watch list without credentials - callback', (done) => {
+    Robinhood(null).create_watch_list({}, (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body).have.property('detail');
+      done();
+    });
+  });
+
+  it('Should not create watch list without credentials - promise', (done) => {
+    Robinhood(null).create_watch_list({}, (err, response, body) => {
+      if (err) {
+        console.log(err);
+        done(err);
+        return;
+      }
+      should(body).have.property('detail');
+      done();
+    });
   });
 
 
-  it('Should not get watchlists without credentials - callback', function(done) {
-      Robinhood(null).watchlists(function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body).have.property('detail');
-          done();
-      });
+  it('Should not get watchlists without credentials - callback', (done) => {
+    Robinhood(null).watchlists((err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body).have.property('detail');
+      done();
+    });
   });
 
-  it('Should not get watchlists without credentials - promise', function(done) {
-      Robinhood(null).watchlists(function(err, response, body) {
-          if(err) {
-              console.log(err)
-              done(err);
-              return;
-          }
-          should(body).have.property('detail');
-          done();
-      });
+  it('Should not get watchlists without credentials - promise', (done) => {
+    Robinhood(null).watchlists((err, response, body) => {
+      if (err) {
+        console.log(err);
+        done(err);
+        return;
+      }
+      should(body).have.property('detail');
+      done();
+    });
   });
 
 
-    it('Should get splits - callback', function(done) {
-      Robinhood(null).instruments(TEST_SYMBOL)
-      .then(success => {
-        Robinhood(null).splits(success.results[0].url.split("/instruments/")[1], function(err, response, body) {
-            if(err) {
-                done(err);
-                return;
-            }
-            should(body).have.property('results');
-            done();
+  it('Should get splits - callback', (done) => {
+    Robinhood(null).instruments(TEST_SYMBOL)
+      .then((success) => {
+        Robinhood(null).splits(success.results[0].url.split('/instruments/')[1], (err, response, body) => {
+          if (err) {
+            done(err);
+            return;
+          }
+          should(body).have.property('results');
+          done();
         });
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-    });
+      });
+  });
 
-    it('Should get splits - promise', function(done) {
-      //First Get Quote
-      Robinhood(null).instruments(TEST_SYMBOL)
-      .then(success => {
-        Robinhood(null).splits(success.results[0].url.split("/instruments/")[1])
-        .then(success => {
-          should(success).have.property('results');
-          done();
-        })
-        .catch(err => {
-          done(err);
-        })
+  it('Should get splits - promise', (done) => {
+    // First Get Quote
+    Robinhood(null).instruments(TEST_SYMBOL)
+      .then((success) => {
+        Robinhood(null).splits(success.results[0].url.split('/instruments/')[1])
+          .then((success) => {
+            should(success).have.property('results');
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-    });
+      });
+  });
 
-    it('Should get historicals - promise', function(done) {
-      //First Get Quote
-      Robinhood(null).historicals(TEST_SYMBOL, '10minute', 'week')
-      .then(success => {
+  it('Should get historicals - promise', (done) => {
+    // First Get Quote
+    Robinhood(null).historicals(TEST_SYMBOL, '10minute', 'week')
+      .then((success) => {
         should(success).have.property('historicals');
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
-      })
-    });
-
-    it('Should get historicals - callback', function(done) {
-      Robinhood(null).historicals(TEST_SYMBOL, '10minute', 'week', function(err, response, body) {
-          if(err) {
-              done(err);
-              return;
-          }
-          should(body).have.property('historicals');
-          done();
       });
+  });
+
+  it('Should get historicals - callback', (done) => {
+    Robinhood(null).historicals(TEST_SYMBOL, '10minute', 'week', (err, response, body) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      should(body).have.property('historicals');
+      done();
     });
+  });
 
-    //It should place_buy_order with api.buy() - promise
+  // It should place_buy_order with api.buy() - promise
 
-    it(`It should place_buy_order with format api.buy("AAPL", {
+  it(`It should place_buy_order with format api.buy("AAPL", {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00
-        }) - promise`, function(done) {
+        }) - promise`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
-
-    it(`It should place_buy_order with format api.buy("AAPL",     {
+  it(`It should place_buy_order with format api.buy("AAPL",     {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00,
             instrument: {
                 symbol: "AAPL"
             }
-        }) - promise`, function(done) {
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
+        }) - promise`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 
-    it(`It should place_buy_order with api.buy("AAPL",     {
+  it(`It should place_buy_order with api.buy("AAPL",     {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00,
@@ -731,39 +726,37 @@ describe('Robinhood', function() {
                 symbol: "AAPL",
                 url: ""
             }
-        }) - promise`, function(done) {
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
+        }) - promise`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 
 
-
-    it(`It should place_buy_order with format api.buy("AAPL", {
+  it(`It should place_buy_order with format api.buy("AAPL", {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00
-        }, callback) - callback`, function(done) {
+        }, callback) - callback`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
-
-    it(`It should place_buy_order with format api.buy("AAPL",     {
+  it(`It should place_buy_order with format api.buy("AAPL",     {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00,
             instrument: {
                 symbol: "AAPL"
             }
-        }, callback) - callback`, function(done) {
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
+        }, callback) - callback`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 
-    it(`It should place_buy_order with api.buy("AAPL",     {
+  it(`It should place_buy_order with api.buy("AAPL",     {
             type: 'limit',
             quantity: 1,
             bid_price: 110.00,
@@ -771,11 +764,9 @@ describe('Robinhood', function() {
                 symbol: "AAPL",
                 url: ""
             }
-        }, callback) - callback`, function(done) {
-      //First Get Quote
-      should(false).be.equal("Test has not been written");
-      done();
-    });
-
-
+        }, callback) - callback`, (done) => {
+    // First Get Quote
+    should(false).be.equal('Test has not been written');
+    done();
+  });
 });

@@ -1,9 +1,9 @@
-const auth = require("./auth")
+const auth = require('./auth');
 
 class API {
-    constructor() {
-        console.log("API constructor")
-    }
+  constructor() {
+    console.log('API constructor');
+  }
 }
 
-module.exports = API
+module.exports = API;
