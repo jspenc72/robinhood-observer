@@ -78,6 +78,7 @@
   },
   "files": [
     "src/crypto/*",
+    "src/indicators/*",
     "src/*"
   ],
   "bin": {
