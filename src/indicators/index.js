@@ -1,6 +1,8 @@
 class Indicators {
   constructor() {
     this.history = [];
+    this.cema = 0;
+    this.cmacd = 0;
   }
 
   macd(value, options) {
@@ -10,22 +12,21 @@ class Indicators {
     this.history.push(value);
     const A = this.ema(this.history, slowPeriod);
     const B = this.ema(this.history, fastPeriod);
-    const C = A.map((x,i) => { 
-      return (x - B[i]);
-    }).map((x) => {
-      return Math.abs(x);
-    });
-    console.log(
-      C,
-      this.history,
-      this.history[fastPeriod],
-      this.history[slowPeriod],
-      this.history[signalPeriod],
-    );
+    const C = A
+      .map((x, i) => (x - B[i]))
+      .map(x => Math.abs(x));
+    this.cmacd = {
+      macd: C,
+      history: this.history,
+      fast: this.history[fastPeriod],
+      slow: this.history[slowPeriod],
+      signal: this.history[signalPeriod],
+    };
+    return this.cmacd;
   }
   // Exponential Moving Average
+
   ema(mArray, mRange) {
-    
     const k = 2 / (mRange + 1);
     // first item is just the same as the first item in the input
     const emaArray = [mArray[0]];
@@ -33,6 +34,7 @@ class Indicators {
     for (let i = 1; i < mArray.length; i + 1) {
       emaArray.push(mArray[i] * k + emaArray[i - 1] * (1 - k));
     }
+    this.cema = emaArray;
     return emaArray;
   }
   //   rsi() {}
