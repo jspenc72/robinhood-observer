@@ -20,7 +20,7 @@ A Reactive NodeJS Framework for the [Robinhood](https://www.robinhood.com/) API.
 [See The Reactive Extensions for JavaScript (RxJS)](https://github.com/Reactive-Extensions/RxJS) for more information.
 
 ## Features
-*   Works with Robinhoods New SMS 2FA (As of June 2019)
+*   Works with Robinhoods New SMS 2FA (As of February 25th 2022)
 *   Reactive
 *   Comprehensive CLI
 *   Quote Stock Prices
@@ -48,6 +48,24 @@ $ npm i robinhood-observer --save
 | ROBINHOOD_USERNAME  | ''  | Your robinhood Username  |
 | ROBINHOOD_PASSWORD  | ''  | Your robinhood Password  |
 | ROBINHOOD_DEVICE_PATH  | device.json  | Path to store the unique identifier for your 2FA device. |
+| ROBINHOOD_MFA_TOKEN_PATH  | mfa.json  | Path to input your MFA code at runtime device. |
+
+### NOTES ON MFA
+
+Tested and working with MFA via SMS enabled as of February 25th 2022. 
+
+```bash
+If the Robinhood api requests a MFA code be provided this library will watch the mfa.json file to be updated on disk. 
+## If mfa.json is updated on disk with a mfa code this library will create a valid auth_token and cache it in device.json to be used by subsequent requests.
+## If a MFA token is not provided, timout occurs after 60 seconds. 
+
+```
+
+mfa.json sample
+
+```json
+{"mfa_code":"123456"}
+```
 
 ## CLI Usage
 

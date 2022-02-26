@@ -31,6 +31,13 @@ class Device {
     this.cacheDevice()
   }
 
+  registerWithTokens(body){
+    this.registered = true
+    this.updateTokens(body)
+    this.cacheDevice()
+    console.log("Your auth_token has been updated successfully, device.json saved... Restart robinhood to continue")
+  }
+
   updateTokens(body) {
     this.access_token = body.access_token
     this.refresh_token = body.refresh_token

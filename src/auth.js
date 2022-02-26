@@ -8,13 +8,13 @@ var RxJS = require('rxjs'),
     fs = require("fs"),
     endpoints = require("./endpoints"),
     headers = require("./headers"),
-    Device = require("./device")
+    Device = require("./device");
+const MFAService = require('./mfa');
 
 var _apiUrl = 'https://api.robinhood.com/';
 var _clientId = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS'
 
 class Auth {
-  
   headers = headers
   _request = request.defaults()
   _rp = rp.defaults()
@@ -31,7 +31,7 @@ class Auth {
     return new Promise((resolve, reject) => {
       if(this.device.registered){
         // Load device ID and authenticate?
-        console.log("Device previously registered: ", device.challenge.id)
+        console.log("Device previously registered: ", device.path)
         this.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = device.challenge.id
         this._build_auth_header(device.access_token);        
         this.setHeaders(this.headers);
@@ -40,6 +40,10 @@ class Auth {
       }else{
         this.registerTokenWith(this.device, _private.username, _private.password)
         .then((body) => {
+
+          // If cli
+          // Wait for 2fa token
+
           return this.collect2fa()
           .then(user_input => {
             this.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = body.challenge.id
@@ -103,7 +107,6 @@ class Auth {
     });
   }
 
-
   _build_auth_header(token) {
     this.headers.Authorization = 'Bearer ' + token;
   }
@@ -131,14 +134,25 @@ class Auth {
               challenge_type: 'sms'
             }
           },
-          function (err, httpResponse, body) {
+          (err, httpResponse, body) => {
             if (err) {
               reject(err);
             }else if(body.detail == "Request blocked, challenge issued."){
               device.register(body)
               resolve(body)
             }else if(body.mfa_required == true && body.mfa_type == 'sms') {
-              reject(new Error('You must disable 2FA on your account for this to work.'))
+              console.log('2FA enabled on your account, add mfa token to /path/to/running/directory/2fa.json, with format: {"mfa_code":"YOUR_NUMERIC_MFA_CODE_HERE"}, for example {"mfa_code":"111111"}, then save and close the file')
+              var svc = new MFAService()
+              svc.watchFile((type, current, previous, two_fa_json)=>{
+                console.log(two_fa_json)
+                if (type != "Timed out.") {
+                  return this.registerTokenWith2FA(this.device, this._private.username, this._private.password, two_fa_json.mfa_code)
+                }else{
+                  reject(new Error('2FA enabled on your account, timeout occured after 60 seconds for mfa code.'))
+                }
+              }, 60000)
+            } else if(body.detail == "After 5 attempts, you must wait 10 minutes before trying again.") {
+              reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
             } else if(body.detail == "Unable to log in with provided credentials.") {
               reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
             }else if (!body.access_token) {
@@ -151,12 +165,62 @@ class Auth {
       }
     })
   }
+  
+  
+  // 2.5 Register Device Token, with User Credentials, and MFA Code
+  registerTokenWith2FA(device, username, password, mfa_code) {
+    return new Promise((resolve, reject) => {
+      if(!username || !password){
+        reject(new Error("Username or Password is undefined, did you export ROBINHOOD_USERNAME and ROBINHOOD_PASSWORD?"))
+      }else{
+        this.post(
+          {
+            uri: _apiUrl + endpoints.login,
+            form: {
+              device_token: device.device_token,
+              client_id: _clientId,
+              expires_in: 86400,
+              grant_type: 'password',
+              scope: 'internal',
+              password: password,
+              username: username,
+              mfa_code: mfa_code
+            }
+          },
+          (err, httpResponse, body) => {
+            if (err) {
+              reject(err);
+            }else if(body.detail == "Request blocked, challenge issued."){
+              device.register(body)
+              resolve(body)
+            }else if(body.mfa_required == true && body.mfa_type == 'sms') {
+              console.log(body)
+              // reject(new Error('You must disable 2FA on your account for this to work.'))
+            } else if(body.detail == "After 5 attempts, you must wait 10 minutes before trying again.") {
+              reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
+            } else if(body.detail == "Unable to log in with provided credentials.") {
+              reject(new Error(body.detail+': ' + JSON.stringify(httpResponse)));
+            }else if (!body.access_token) {
+              reject(new Error('token not found ' + JSON.stringify(httpResponse)));
+            } else{
+              // This means we can now authenticate
+              // Save token
+              this.device.registerWithTokens(body)
+            }
+          }
+        );
+      }
+    })
+  }
+
+  // 3. Collect User 2FA code via 2fa.json.
 
   // 3. Collect User 2FA code via user input.
   collect2fa() {
       process.stdin.setEncoding('utf-8');
       console.log("Enter the 2FA code that was sent to you via sms.");
       return new Promise((resolve, reject) => {
+
         // When user input data and hit enter key.
         process.stdin.on('data', function (data) {
           if(data){
