@@ -1,6 +1,6 @@
 {
   "name": "robinhood-observer",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Comprehensive client featuring RxJS Streams and a CLI for Robinhood Free Stock Trading. A drop in replacement for @aurbano\robinhood which includes callback, promise and observable support.",
   "main": "src/index.js",
   "scripts": {

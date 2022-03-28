@@ -189,6 +189,35 @@ function Robinhood(opts, callback) {
     });
     return source;
   };
+
+  /**
+   * [observePositions description]
+   * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
+   * @return {Observable}               An observable which updates on the frequency provided.
+   */
+  
+   api.observePositions = function (frequency, nonzero = true) {
+    frequency = frequency || 5000; // Set frequency of updates to 5000 by default
+    const source = Rx.Observable.create((observer) => {
+      const intrvl = setInterval(() => {
+        const tOpts = {
+          uri: _apiUrl + endpoints.positions + (nonzero ? '?nonzero=true' : ''),
+        };
+        auth.get(tOpts)
+          .then((success) => {
+            observer.onNext(success);
+          })
+          .catch((err) => {
+            observer.onError(err);
+          });
+      }, frequency);
+      return () => {
+        clearInterval(intrvl);
+      };
+    });
+    return source;
+  };
+
   /**
    * [observeOrders description]
    * @param  {number} frequency         Frequency to poll the Robinhood API in Milliseconds
