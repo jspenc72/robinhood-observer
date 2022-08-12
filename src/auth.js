@@ -91,7 +91,7 @@ class Auth {
     }else{
       return this._rp.post(options)
     }
-  }
+  }x
 
   setHeaders(headers){
     this._request = request.defaults({
@@ -213,7 +213,7 @@ class Auth {
     })
   }
 
-  // 3. Collect User 2FA code via 2fa.json.
+  // 3. Collect User 2FA code via 2fa.json. see MFAService class
 
   // 3. Collect User 2FA code via user input.
   collect2fa() {
