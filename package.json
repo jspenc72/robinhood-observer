@@ -64,7 +64,7 @@
     "stringstream": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
+    "ava": "^5.1.0",
     "coveralls": "^2.11.15",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
