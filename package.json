@@ -48,7 +48,7 @@
     "console.table": "^0.10.0",
     "cryptiles": "^4.1.3",
     "death": "^1.1.0",
-    "debug": "^4.1.1",
+    "debug": "^4.3.4",
     "diff": "^4.0.1",
     "esm": "^3.2.25",
     "extend": "^3.0.2",
@@ -64,7 +64,7 @@
     "stringstream": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
+    "ava": "^5.1.0",
     "coveralls": "^2.11.15",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
